@@ -1,0 +1,72 @@
+from sqlalchemy import String, Boolean, ForeignKey, UUID, Enum as sqlEnum
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+import uuid
+from app.core.database import Base
+from enum import Enum
+from datetime import datetime, timezone
+
+
+
+
+
+class Status(str, Enum):
+    draft= "draft",
+    published= "published"
+
+
+
+
+
+class Article(Base):
+    __tablename__= "article"
+
+
+    id: Mapped[UUID]= mapped_column(
+        UUID(as_uuid= True),
+        primary_key= True,
+        default= uuid.uuid4
+    )
+    title: Mapped[str]= mapped_column(
+        String,
+        nullable= False
+    )
+    content: Mapped[str]= mapped_column(
+        String,
+        nullable=False
+    )
+    author_id: Mapped[UUID] = mapped_column(
+        UUID(as_uuid= True),
+        ForeignKey("users.id", ondelete= "CASCADE")
+    )
+    category_id: Mapped[UUID] = mapped_column(
+        UUID(as_uuid= True),
+        ForeignKey("category.id", ondelete= "SET NULL")
+    )
+    cover_image: Mapped[str | None]= mapped_column(
+        String,
+        nullable= True
+    )
+    status: Mapped[Status]= mapped_column(
+        Status,
+        default= Status.draft
+    )
+    created_at: Mapped[datetime]= mapped_column(
+        datetime,
+        default= lambda: datetime.now(timezone.utc)
+    )
+    updated_at: Mapped[datetime]= mapped_column(
+        datetime,
+        default= lambda: datetime.now(timezone.utc)
+    )
+
+
+
+    user: Mapped["User"]= relationship(
+        "User",
+        back_populates= "articles",
+        lazy="selectin"
+    )
+    category: Mapped["Category"]= relationship(
+        "Category",
+        back_populates= "articles"
+    )
