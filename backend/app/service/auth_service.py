@@ -8,14 +8,12 @@ from sqlalchemy import select
 from app.model.user import User
 from app.utils.password_strength import validate_password_strength
 from app.core.logger import logger
-from passlib.context import CryptContext
 from pydantic import EmailStr
 from app.core.config import settings
 from app.schema.auth_schema import Role
+from app.api.deps import bcrypt_context
+from app.api.deps import create_access_token, authenticate_user
 
-
-
-bcrypt_context= CryptContext(schemes=["bcrypt"], deprecated= "auto")
 
 
 
@@ -82,26 +80,6 @@ async def promote_user_service(user_id: uuid.UUID, new_role: Role, db: AsyncSess
 
 
 
-
-async def authenticate_user(user_credential: LoginInfo, db: AsyncSession):
-    try:
-        user= await db.scalar(select(User).where(User.email == user_credential.email))
-        if not user:
-            return False
-        if not bcrypt_context.verify(user_credential.password, user.hashed_password):
-            return False
-        return user
-    except ValueError as e:
-        logger.error(str(e))
-        raise ValueError(str(e))
-
-
-async def create_access_token(email: EmailStr, id: uuid.UUID, role: str, token_purpose: str, expires_delta: timedelta):
-    encode= {"sub": email, "id": str(id), "role": role, "token_type": token_purpose}
-    expires= datetime.now(timezone.utc) + expires_delta
-    encode.update({"exp": expires})
-
-    return jwt.encode(encode, settings.SECRET_KEY, algorithm= settings.ALGORITHM)
 
 
 async def refresh_token_service(refresh_token: str, db: AsyncSession):
