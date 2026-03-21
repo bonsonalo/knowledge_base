@@ -5,11 +5,8 @@ import uuid
 from enum import Enum
 from sqlalchemy import Enum as sqlEnum
 from datetime import datetime, timezone
+from app.schema.auth_schema import Role
 
-class Role(str, Enum):
-    user= "user",
-    editor= "editor",
-    admin = "admin"
 
 
 class User(Base):
