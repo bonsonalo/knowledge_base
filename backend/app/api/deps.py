@@ -11,14 +11,13 @@ from app.core.config import settings
 from jose import jwt, JWTError
 import uuid
 from typing import Annotated, List
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Response
 from fastapi.security import OAuth2PasswordBearer
 from app.core.database import get_db
 from uuid import UUID
 
 bcrypt_context= CryptContext(schemes=["bcrypt"], deprecated= "auto")
 
-oauth_bearer= OAuth2PasswordBearer(tokenUrl= "/api/v1/auth/login")
 
 
 async def authenticate_user(user_credential: LoginInfo, db: AsyncSession):
@@ -47,7 +46,13 @@ async def create_access_token(email: EmailStr, id: uuid.UUID, role: str, token_p
 db_dependency= Annotated[AsyncSession, Depends(get_db)]
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth_bearer)]):
+# oauth_bearer= OAuth2PasswordBearer(tokenUrl= "/api/v1/auth/login")
+# oauth_dependency= Annotated[str, Depends(oauth_bearer)]
+
+async def get_current_user(request: Response):
+    token= request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail= "not authenticated")
     try:
         payload= jwt.decode(token, settings.SECRET_KEY, algorithms= [settings.ALGORITHM])
         email: str= payload.get("sub")
@@ -78,6 +83,6 @@ def role_required(allowed_roles: List[str]):
         return current_user
     return wrapper
 
-user_dependency= Annotated[dict, Depends(role_required("user", "editor", "admin"))]
-editor_dependency= Annotated[dict, Depends(role_required("admin", "editor"))]
-admin_dependency= Annotated[dict, Depends(role_required("admin"))]
+user_dependency= Annotated[dict, Depends(role_required(["user", "editor", "admin"]))]
+editor_dependency= Annotated[dict, Depends(role_required(["admin", "editor"]))]
+admin_dependency= Annotated[dict, Depends(role_required(["admin"]))]
