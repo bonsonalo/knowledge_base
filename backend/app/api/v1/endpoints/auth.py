@@ -1,6 +1,6 @@
-from fastapi import HTTPException, APIRouter, status
+from fastapi import HTTPException, APIRouter, Request, status, Response
 from app.api.deps import db_dependency
-from app.schema.auth_schema import LoginInfo, RefreshTokenRequest, UserSignUp
+from app.schema.auth_schema import LoginInfo, UserSignUp
 from app.service.auth_service import login_service, promote_user_service, refresh_token_service, register_user
 from app.core.logger import logger
 from uuid import UUID
@@ -17,9 +17,9 @@ router= APIRouter(
 #sign up
 
 @router.post("/signup")
-async def sign_up(user_info: UserSignUp, db: db_dependency):
+async def sign_up(user_info: UserSignUp, db: db_dependency, res: Response):
     try:
-        return await register_user(user_info, db)
+        return await register_user(user_info, db, res)
     except ValueError as e:
         logger.error("Couldnot sign up")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail= str(e))
@@ -28,9 +28,9 @@ async def sign_up(user_info: UserSignUp, db: db_dependency):
 # login
 
 @router.post("/login")
-async def login_user(user_info: LoginInfo, db: db_dependency):
+async def login_user(user_info: LoginInfo, db: db_dependency, res: Response):
     try:
-        return await login_service(user_info, db)
+        return await login_service(user_info, db, res)
     except Exception as e:
         logger.error("couldnot validate user")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail= str(e))
@@ -49,9 +49,12 @@ async def promote_user(user_id: UUID, new_role: str, db: db_dependency, current_
 #refresh token
 
 @router.post("/refresh")
-async def refresh_access_token(request: RefreshTokenRequest):
+async def refresh_access_token(res: Response, request: Request):
      try:
-          return await refresh_token_service(request)
+          return await refresh_token_service(res, request)
+     except ValueError as e:
+          logger.error("the token type is not refrehs")
+          raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail= str(e))
      except ExpiredSignatureError:
           logger.error("couldnot no provide refresh token")
           raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail= "refresh token Expired")
