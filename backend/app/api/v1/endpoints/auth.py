@@ -39,10 +39,12 @@ async def login_user(user_info: LoginInfo, db: db_dependency, res: Response):
 
 @router.put("/promote_user/{user_id}")
 async def promote_user(user_id: UUID, new_role: str, db: db_dependency, current_user: admin_dependency):
-        updated= await promote_user_service(user_id, new_role, db)
-        if not updated:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "couldnot promote user")
-        return updated
+        try:
+            updated= await promote_user_service(user_id, new_role, db)
+            return updated
+        except ValueError as e:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= str(e))
+             
 
 
 
