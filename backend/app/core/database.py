@@ -26,5 +26,5 @@ class Base(DeclarativeBase):
 #get_db
 
 async def get_db():
-    async with AsyncSessionLocal as db:
+    async with AsyncSessionLocal() as db:
         yield db
