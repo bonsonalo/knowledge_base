@@ -11,7 +11,7 @@ from app.core.config import settings
 from jose import jwt, JWTError
 import uuid
 from typing import Annotated, List
-from fastapi import Depends, HTTPException, status, Response
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from app.core.database import get_db
 from uuid import UUID
@@ -49,7 +49,7 @@ db_dependency= Annotated[AsyncSession, Depends(get_db)]
 # oauth_bearer= OAuth2PasswordBearer(tokenUrl= "/api/v1/auth/login")
 # oauth_dependency= Annotated[str, Depends(oauth_bearer)]
 
-async def get_current_user(request: Response):
+async def get_current_user(request: Request):
     token= request.cookies.get("access_token")
     if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail= "not authenticated")
