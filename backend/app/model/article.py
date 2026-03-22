@@ -1,4 +1,4 @@
-from sqlalchemy import String, Boolean, ForeignKey, UUID, Enum as sqlEnum
+from sqlalchemy import DateTime, String, Boolean, ForeignKey, UUID, Enum as sqlEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import uuid
 from app.core.database import Base
@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 
 
 class Status(str, Enum):
-    draft= "draft",
+    draft= "draft"
     published= "published"
 
 
@@ -47,15 +47,15 @@ class Article(Base):
         nullable= True
     )
     status: Mapped[Status]= mapped_column(
-        Status,
+        sqlEnum(Status),
         default= Status.draft
     )
     created_at: Mapped[datetime]= mapped_column(
-        datetime,
+        DateTime(timezone= True),
         default= lambda: datetime.now(timezone.utc)
     )
     updated_at: Mapped[datetime]= mapped_column(
-        datetime,
+        DateTime(timezone= True),
         default= lambda: datetime.now(timezone.utc)
     )
 
