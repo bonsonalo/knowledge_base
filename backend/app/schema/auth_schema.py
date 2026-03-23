@@ -18,5 +18,5 @@ class Role(str, Enum):
     editor= "editor"
     admin = "admin"
 
-class RefreshTokenRequest(BaseModel):
-    refresh_token: str
+# class RefreshTokenRequest(BaseModel):
+#     refresh_token: str
