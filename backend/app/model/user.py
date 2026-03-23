@@ -1,6 +1,6 @@
 from app.core.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Boolean, Integer, UUID
+from sqlalchemy import DateTime, String, Boolean, Integer, UUID
 import uuid
 from enum import Enum
 from sqlalchemy import Enum as sqlEnum
@@ -43,6 +43,7 @@ class User(Base):
         nullable= True
     )
     created_at: Mapped[datetime]= mapped_column(
+        DateTime(timezone= True),
         default= lambda: datetime.now(timezone.utc)
     )
 
@@ -52,12 +53,12 @@ class User(Base):
     articles: Mapped[list["Article"]]= relationship(
         "Article",
         back_populates= "user",
-        cascade= "all delete-orphan",
+        cascade= "all, delete-orphan",
         lazy= "selectin"
     )
     notification: Mapped[list["Notification"]]= relationship(
         "Notification",
         back_populates= "user",
-        cascade= "all delete-orphan",
+        cascade= "all, delete-orphan",
         lazy= "selectin"
     )
