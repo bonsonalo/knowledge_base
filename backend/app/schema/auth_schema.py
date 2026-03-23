@@ -14,8 +14,8 @@ class LoginInfo(BaseModel):
     password: str
 
 class Role(str, Enum):
-    user= "user",
-    editor= "editor",
+    user= "user"
+    editor= "editor"
     admin = "admin"
 
 class RefreshTokenRequest(BaseModel):
