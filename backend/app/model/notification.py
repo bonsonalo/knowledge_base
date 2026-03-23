@@ -1,4 +1,4 @@
-from sqlalchemy import String, UUID, ForeignKey, Boolean
+from sqlalchemy import DateTime, String, UUID, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import uuid
 from app.core.database import Base
@@ -25,13 +25,13 @@ class Notification(Base):
         default= False
     )
     created_at: Mapped[datetime]= mapped_column(
-        datetime,
+        DateTime(timezone= True),
         default= datetime.now(timezone.utc)
     )
 
 
     user: Mapped["User"]= relationship(
         "User",
-        back_populates= "user",
+        back_populates= "notification",
         lazy= "selectin"
     )
