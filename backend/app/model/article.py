@@ -5,6 +5,8 @@ from app.core.database import Base
 from enum import Enum
 from datetime import datetime, timezone
 
+from app.schema.article_schema import Category
+
 
 
 
@@ -38,9 +40,9 @@ class Article(Base):
         UUID(as_uuid= True),
         ForeignKey("users.id", ondelete= "CASCADE")
     )
-    category_id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid= True),
-        ForeignKey("category.id", ondelete= "SET NULL")
+    category: Mapped[Category] = mapped_column(
+        sqlEnum(Category),
+        nullable= False
     )
     cover_image: Mapped[str | None]= mapped_column(
         String,
@@ -65,8 +67,4 @@ class Article(Base):
         "User",
         back_populates= "articles",
         lazy="selectin"
-    )
-    category: Mapped["Category"]= relationship(
-        "Category",
-        back_populates= "articles"
     )
