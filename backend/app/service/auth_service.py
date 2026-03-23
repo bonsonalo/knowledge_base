@@ -17,7 +17,7 @@ from app.api.deps import create_access_token, authenticate_user
 
 
 
-async def register_user(user_info: UserSignUp, db: AsyncSession):
+async def register_user(user_info: UserSignUp, db: AsyncSession,  res):
     try:
         validate_password_strength(user_info.password)
         existing_user= await db.scalar(select(User).where(User.email == user_info.email))
@@ -37,33 +37,60 @@ async def register_user(user_info: UserSignUp, db: AsyncSession):
         hashed_password= bcrypt_context.hash(user_info.password)
     )
     db.add(user_credential)
-    db.commit()
-    db.refresh(user_credential)
-    access_token= create_access_token(user_credential.email, user_credential.id, "access", timedelta(minutes=20))
-    refresh_token= create_access_token(user_credential.email, user_credential.id, "refresh", timedelta(days=30))
+    await db.commit()
+    await db.refresh(user_credential)
+    access_token= create_access_token(user_credential.email, user_credential.id, user_credential.role, "access", timedelta(minutes=20))
+    refresh_token= create_access_token(user_credential.email, user_credential.id, user_credential.role, "refresh", timedelta(days=30))
 
-    return {
-            {"access_token": access_token, "token_type": "bearer"},  
-            {"access_token": refresh_token, "token_type": "bearer"}
+    res.set_cookie(
+        key= "access_token",
+        value= access_token,
+        secure= True,
+        httponly= True,
+        samesite= "lax",
+        max_age= 20 * 60
+    )
+    res.set_cookie(
+        key= "refresh_token",
+        value= refresh_token,
+        secure= True,
+        httponly= True,
+        samesite= "lax",
+        max_age= 30 * 24 * 60 * 60
+    )
 
-        }
+    return {"message": "Sign up successful"}
 
 
 
-async def login_service(user_info: LoginInfo, db: AsyncSession):
+
+
+async def login_service(user_info: LoginInfo, db: AsyncSession, res):
     user= await authenticate_user(user_info, db)
     if not user:
         logger.error("either the email or the password is Wrong!")
         raise ValueError("Incorrect credential")
-    access_token= create_access_token(user.email, user.id, "access", timedelta(minutes=20))
-    refresh_token= create_access_token(user.email, user.id, "refresh", timedelta(days=30))
+    access_token= create_access_token(user.email, user.id, user.role, "access", timedelta(minutes=20))
+    refresh_token= create_access_token(user.email, user.id, user.role, "refresh", timedelta(days=30))
 
-    return {
-        {"access_token": access_token, "token_type": "bearer"},  
-        {"access_token": refresh_token, "token_type": "bearer"}
+    res.set_cookie(
+        key= "access_token",
+        value= access_token,
+        secure= True,
+        httponly= True,
+        samesite= "lax",
+        max_age= 20 * 60
+    )
+    res.set_cookie(
+        key= "refresh_token",
+        value= refresh_token,
+        secure= True,
+        httponly= True,
+        samesite= "lax",
+        max_age= 30 * 24 * 60 * 60
+    )
 
-    }
-
+    return {"message": "Login successful"}
 
 
 async def promote_user_service(user_id: uuid.UUID, new_role: Role, db: AsyncSession):
@@ -74,7 +101,7 @@ async def promote_user_service(user_id: uuid.UUID, new_role: Role, db: AsyncSess
     user.role= new_role
     await db.commit()
     logger.info("successfully promoted the user to {new_role} role")
-    db.refresh(user)
+    await db.refresh(user)
     return user
 
 
@@ -82,11 +109,13 @@ async def promote_user_service(user_id: uuid.UUID, new_role: Role, db: AsyncSess
 
 
 
-async def refresh_token_service(refresh_token: str, db: AsyncSession):
-    payload= jwt.decode(refresh_token, settings.SECRET_KEY, settings.ALGORITHM)
+
+async def refresh_token_service(res, request):
+    refresh_token= request.cookies.get("refresh_token")
+    payload= jwt.decode(refresh_token, settings.SECRET_KEY, algorithms= [settings.ALGORITHM])
     if payload.get("token_type") != "refresh":
         logger.error("The token type is not refresh_token")
-        raise False
+        raise ValueError("invalid token type")
     email= payload.get("email")
     user_id= payload.get("id")
     role= payload.get("role")
@@ -94,9 +123,13 @@ async def refresh_token_service(refresh_token: str, db: AsyncSession):
 
     new_access_token= create_access_token(email, user_id, role, "access", timedelta(minutes=20))
 
-    return {"access_type": new_access_token, "token_type": "bearer"}
+    res.set_cookie(
+        key= "access_token",
+        value= new_access_token,
+        secure= True,
+        httponly= True,
+        samesite= "lax",
+        max_age= 20 * 60
+    )
 
-
-
-
-
+    return {"message": "refreshed succesfully"}
