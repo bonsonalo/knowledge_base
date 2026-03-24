@@ -83,7 +83,7 @@ async def patch_article(to_update: ToUpdate, current_user, db: AsyncSession):
     await db.refresh(article)
     return article
 
-# get all articles
+# get all articles that you published or drafted
 
 async def get_all_articles(current_user, db: AsyncSession):
     current_id= current_user["id"]
