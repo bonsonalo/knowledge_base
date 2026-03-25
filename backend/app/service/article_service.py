@@ -4,22 +4,27 @@ from app.model.article import Article
 from app.core.logger import logger
 from sqlalchemy import select
 from uuid import UUID
-
-
+from fastapi import UploadFile
+from app.service.upload_service import upload_file
 
 # create and publish article    Editor Role
 
-async def create_article_publish(to_add: CreateArticle, current_user, db: AsyncSession):
+async def create_article_publish(to_add: CreateArticle, current_user, db: AsyncSession, file: UploadFile):
     current_id= current_user.get("id")
     try:
+
+        cover_img_url =  upload_file(file, folder= "cover_image")
+
+
         created= Article(
             title = to_add.title,
             content= to_add.content,
-            cover_image= to_add.cover_image,
+            cover_image= cover_img_url,
             status= "published",
             author_id= current_id,
             category= to_add.category
         )
+
 
         db.add(created)
         logger.info("added the created article successfully")
