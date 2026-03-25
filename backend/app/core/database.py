@@ -2,6 +2,9 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from app.core.config import settings
 from sqlalchemy.orm import DeclarativeBase
 
+
+
+
 #engine
 
 engine= create_async_engine(settings.DB_URL)
@@ -28,3 +31,6 @@ class Base(DeclarativeBase):
 async def get_db():
     async with AsyncSessionLocal() as db:
         yield db
+
+
+    
