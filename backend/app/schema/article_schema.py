@@ -30,9 +30,9 @@ class CreateArticle(BaseModel):
     
 
 class ToUpdate(BaseModel):
-    title: str | None
-    content: str | None
-    cover_image: str | None
-    category: Category | None
+    title: str | None= None
+    content: str | None= None
+    cover_image: str | None= None
+    category: Category | None= None
 
 
