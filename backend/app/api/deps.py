@@ -83,6 +83,6 @@ def role_required(allowed_roles: List[str]):
         return current_user
     return wrapper
 
-user_dependency= Annotated[dict, Depends(role_required(["user", "editor", "admin"]))]
+# user_dependency= Annotated[dict, Depends(role_required(["user", "editor", "admin"]))]
 editor_dependency= Annotated[dict, Depends(role_required(["admin", "editor"]))]
 admin_dependency= Annotated[dict, Depends(role_required(["admin"]))]
