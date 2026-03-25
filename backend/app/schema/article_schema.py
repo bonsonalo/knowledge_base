@@ -25,7 +25,6 @@ class Category(str, Enum):
 class CreateArticle(BaseModel):
     title: str
     content: str
-    cover_image: str
     category: Category
     
 
