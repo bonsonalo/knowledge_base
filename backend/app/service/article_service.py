@@ -9,7 +9,7 @@ from app.service.upload_service import upload_file
 
 # create and publish article    Editor Role
 
-async def create_article_publish(to_add: CreateArticle, current_user, db: AsyncSession, file: UploadFile):
+async def create_article_publish_service(to_add: CreateArticle, current_user, db: AsyncSession, file: UploadFile):
     current_id= current_user.get("id")
     try:
 
@@ -42,7 +42,7 @@ async def create_article_publish(to_add: CreateArticle, current_user, db: AsyncS
 
 # create and draft artcile           Editor Role
 
-async def create_article_draft(to_add: CreateArticle, current_user, db: AsyncSession):
+async def create_article_draft_service(to_add: CreateArticle, current_user, db: AsyncSession):
     current_id= current_user.get("id")
     try:
         created= Article(
@@ -70,7 +70,7 @@ async def create_article_draft(to_add: CreateArticle, current_user, db: AsyncSes
 
 # update article    Editor Role
 
-async def patch_article(to_update: ToUpdate, article_id: UUID, current_user, db: AsyncSession):
+async def patch_article_service(to_update: ToUpdate, article_id: UUID, current_user, db: AsyncSession):
     current_id= current_user.get("id")
     article= await db.scalar(select(Article).where(Article.author_id == current_id).where(Article.id == article_id))
     if not article:
@@ -90,7 +90,7 @@ async def patch_article(to_update: ToUpdate, article_id: UUID, current_user, db:
 
 # get all articles that YOU published or drafted       Editor Role
 
-async def get_all_articles_self_all(current_user, db: AsyncSession):
+async def get_all_articles_self_all_service(current_user, db: AsyncSession):
     current_id= current_user["id"]
     try:
         articles= await db.execute(select(Article).where(Article.author_id == current_id))
@@ -102,7 +102,7 @@ async def get_all_articles_self_all(current_user, db: AsyncSession):
 
 # continues from the above. it is for Published
 
-async def get_all_articles_self_published(current_user, db: AsyncSession):
+async def get_all_articles_self_published_service(current_user, db: AsyncSession):
     current_id= current_user["id"]
     try:
         articles= await db.execute(select(Article).where(Article.author_id == current_id).where(Article.status == "published"))
@@ -114,7 +114,7 @@ async def get_all_articles_self_published(current_user, db: AsyncSession):
 
 # continues from the above. it is for draft
 
-async def get_all_articles_self_draft(current_user, db: AsyncSession):
+async def get_all_articles_self_draft_service(current_user, db: AsyncSession):
     current_id= current_user["id"]
     try:
         articles= await db.execute(select(Article).where(Article.author_id == current_id).where(Article.status == "draft"))
@@ -126,7 +126,7 @@ async def get_all_articles_self_draft(current_user, db: AsyncSession):
 
 # get all articles     # no need to login
 
-async def get_all_articles(db: AsyncSession, 
+async def get_all_articles_service(db: AsyncSession, 
                            title: str | None,
                            category: Category | None,
                            author_id: UUID | None,
@@ -162,7 +162,7 @@ async def get_all_articles(db: AsyncSession,
 
 #get single article     # no need to log in
 
-async def get_article(article_id: UUID, db: AsyncSession):
+async def get_article_service(article_id: UUID, db: AsyncSession):
     try:
         article= await db.scalar(select(Article).where((Article.id == article_id)).where(Article.status == "published"))
         return article
@@ -177,7 +177,7 @@ async def get_article(article_id: UUID, db: AsyncSession):
 
 #get single article     # EDITOR ROLE
 
-async def get_article_editor(article_id: UUID, current_user, db: AsyncSession):
+async def get_article_editor_service(article_id: UUID, current_user, db: AsyncSession):
     current_id= current_user["id"]
     try:
         article= await db.scalar(select(Article).where(Article.author_id == current_id).where((Article.id == article_id)))
@@ -189,7 +189,7 @@ async def get_article_editor(article_id: UUID, current_user, db: AsyncSession):
 
 # delete article Editor Role
 
-async def delete_article(article_id: UUID, current_user, db: AsyncSession):
+async def delete_article_service(article_id: UUID, current_user, db: AsyncSession):
     current_id= current_user["id"]
     try:
         article= await db.scalar(select(Article).where(Article.author_id == current_id).where((Article.id == article_id)))
@@ -203,7 +203,7 @@ async def delete_article(article_id: UUID, current_user, db: AsyncSession):
 
 # delete article for admin role
 
-async def delete_article(article_id: UUID, db: AsyncSession):
+async def delete_article_service_admin(article_id: UUID, db: AsyncSession):
     try:
         article= await db.scalar(select(Article).where((Article.id == article_id)))
         await db.delete(article)
