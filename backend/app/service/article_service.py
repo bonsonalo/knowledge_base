@@ -6,6 +6,10 @@ from sqlalchemy import select
 from uuid import UUID
 from fastapi import UploadFile
 from app.service.upload_service import upload_file
+from app.service.notification_service import create_notification
+
+
+
 
 # create and publish article    Editor Role
 
@@ -13,7 +17,7 @@ async def create_article_publish_service(to_add: CreateArticle, current_user, db
     current_id= current_user.get("id")
     try:
 
-        cover_img_url =  upload_file(file, folder= "cover_image")
+        cover_img_url =  await upload_file(file, folder= "cover_image")
 
 
         created= Article(
@@ -33,6 +37,14 @@ async def create_article_publish_service(to_add: CreateArticle, current_user, db
         await db.refresh(created)
         logger.info("refreshed successfully")
 
+
+        # add notification
+        await create_notification(
+            user_id= current_id,
+            message= "You have published an article",
+            db= db
+        )
+
         return {"message": "Article created and published successfully"}
 
     except ValueError as e:
@@ -42,13 +54,15 @@ async def create_article_publish_service(to_add: CreateArticle, current_user, db
 
 # create and draft artcile           Editor Role
 
-async def create_article_draft_service(to_add: CreateArticle, current_user, db: AsyncSession):
+async def create_article_draft_service(to_add: CreateArticle, current_user, db: AsyncSession, file: UploadFile):
     current_id= current_user.get("id")
     try:
+        cover_img_url =  await upload_file(file, folder= "cover_image")
+
         created= Article(
             title = to_add.title,
             content= to_add.content,
-            cover_image= to_add.cover_image,
+            cover_image= cover_img_url,
             status= "draft",
             author_id= current_id,
             category= to_add.category
@@ -137,7 +151,7 @@ async def get_all_articles_service(db: AsyncSession,
     allowed_sort= {"title", "created_at"}
     allowed_orders= {"asc", "desc"}
     try:
-        query= select(Article)
+        query= select(Article).where(Article.status == "published")
         if title is not None:
             query= query.where(Article.title.ilike(f"%{title}%"))
         if category is not None:
@@ -193,6 +207,8 @@ async def delete_article_service(article_id: UUID, current_user, db: AsyncSessio
     current_id= current_user["id"]
     try:
         article= await db.scalar(select(Article).where(Article.author_id == current_id).where((Article.id == article_id)))
+        if not article:
+            raise ValueError("article doesnt exist")
         await db.delete(article)
         await db.commit()
         return {"message": "Article deleted successfully"}
@@ -206,8 +222,20 @@ async def delete_article_service(article_id: UUID, current_user, db: AsyncSessio
 async def delete_article_service_admin(article_id: UUID, db: AsyncSession):
     try:
         article= await db.scalar(select(Article).where((Article.id == article_id)))
+
+        if not article:
+            raise ValueError("article doesnt exist")
+
+        author_id= article.author_id
         await db.delete(article)
         await db.commit()
+
+        # add notification
+        await create_notification(
+            user_id= author_id,
+            message= "article deleted by Admin",
+            db= db
+        )
         return {"message": "Article deleted successfully"}
     except ValueError as e:
         logger.error(str(e))
