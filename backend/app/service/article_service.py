@@ -86,22 +86,27 @@ async def create_article_draft_service(to_add: CreateArticle, current_user, db: 
 
 async def patch_article_service(to_update: ToUpdate, article_id: UUID, current_user, db: AsyncSession):
     current_id= current_user.get("id")
-    article= await db.scalar(select(Article).where(Article.author_id == current_id).where(Article.id == article_id))
-    if not article:
-        raise ValueError("article not found")
-    if to_update.title is not None:
-        article.title = to_update.title
-    if to_update.category is not None:
-        article.category = to_update.category
-    if to_update.content is not None:
-        article.content = to_update.content
-    if to_update.cover_image is not None:
-        article.cover_image = to_update.cover_image
+    try:
+        article= await db.scalar(select(Article).where(Article.author_id == current_id).where(Article.id == article_id))
+        if not article:
+            raise ValueError("article not found")
+        if to_update.title is not None:
+            article.title = to_update.title
+        if to_update.category is not None:
+            article.category = to_update.category
+        if to_update.content is not None:
+            article.content = to_update.content
+        if to_update.cover_image is not None:
+            article.cover_image = to_update.cover_image
 
-    await db.commit()
-    await db.refresh(article)
-    return article
+        await db.commit()
+        await db.refresh(article)
+        return article
+    except ValueError as e:
+        raise ValueError(str(e))
+    
 
+    
 # get all articles that YOU published or drafted       Editor Role
 
 async def get_all_articles_self_all_service(current_user, db: AsyncSession):
