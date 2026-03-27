@@ -16,7 +16,7 @@ router= APIRouter(
 
 
 # create and publish article    Editor Role
-@router.post("/draft_article")
+@router.post("/publish_article")
 async def create_article_publish(to_add: CreateArticle, current_user: editor_dependency, db: db_dependency, file: UploadFile):
     try:
         await create_article_publish_service(to_add, current_user, db, file)
