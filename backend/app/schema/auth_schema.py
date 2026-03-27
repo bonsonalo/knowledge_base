@@ -14,7 +14,6 @@ class LoginInfo(BaseModel):
     password: str
 
 class Role(str, Enum):
-    user= "user"
     editor= "editor"
     admin = "admin"
 
