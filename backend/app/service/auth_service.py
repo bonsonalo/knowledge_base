@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 import uuid
 
 from jose import jwt
@@ -39,8 +39,8 @@ async def register_user(user_info: UserSignUp, db: AsyncSession,  res):
     db.add(user_credential)
     await db.commit()
     await db.refresh(user_credential)
-    access_token= create_access_token(user_credential.email, user_credential.id, user_credential.role, "access", timedelta(minutes=20))
-    refresh_token= create_access_token(user_credential.email, user_credential.id, user_credential.role, "refresh", timedelta(days=30))
+    access_token= await create_access_token(user_credential.email, user_credential.id, user_credential.role, "access", timedelta(minutes=20))
+    refresh_token= await create_access_token(user_credential.email, user_credential.id, user_credential.role, "refresh", timedelta(days=30))
 
     res.set_cookie(
         key= "access_token",
@@ -70,8 +70,8 @@ async def login_service(user_info: LoginInfo, db: AsyncSession, res):
     if not user:
         logger.error("either the email or the password is Wrong!")
         raise ValueError("Incorrect credential")
-    access_token= create_access_token(user.email, user.id, user.role, "access", timedelta(minutes=20))
-    refresh_token= create_access_token(user.email, user.id, user.role, "refresh", timedelta(days=30))
+    access_token= await create_access_token(user.email, user.id, user.role, "access", timedelta(minutes=20))
+    refresh_token= await create_access_token(user.email, user.id, user.role, "refresh", timedelta(days=30))
 
     res.set_cookie(
         key= "access_token",
@@ -121,7 +121,7 @@ async def refresh_token_service(res, request):
     role= payload.get("role")
 
 
-    new_access_token= create_access_token(email, user_id, role, "access", timedelta(minutes=20))
+    new_access_token= await create_access_token(email, user_id, role, "access", timedelta(minutes=20))
 
     res.set_cookie(
         key= "access_token",
