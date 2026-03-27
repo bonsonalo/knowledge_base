@@ -36,7 +36,7 @@ class User(Base):
     role: Mapped[Role]= mapped_column(
         sqlEnum(Role),
         nullable= False,
-        default= Role.user
+        default= Role.editor
     )
     avatar: Mapped[str]= mapped_column(
         String,
