@@ -37,7 +37,7 @@ async def login_user(user_info: LoginInfo, db: db_dependency, res: Response):
     
 #promote user
 
-@router.put("/promote_user/{user_id}")
+@router.patch("/promote_user/{user_id}")
 async def promote_user(user_id: UUID, new_role: str, db: db_dependency, current_user: admin_dependency):
         try:
             updated= await promote_user_service(user_id, new_role, db)
