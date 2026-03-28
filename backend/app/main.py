@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from app.api.v1.routes import routers
+from backend.app.core.middleware import add_middleware
 
 
 @asynccontextmanager
@@ -11,10 +12,9 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title= "Knowledge Base", lifespan= lifespan)
 
 
-@app.get("/")
-async def get_response():
-    return "Hey"
 
+#CORS middleware
+add_middleware(app)
 
 
 app.include_router(routers)
