@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import FastAPI, HTTPException, APIRouter, UploadFile, status
+from fastapi import FastAPI, Form, HTTPException, APIRouter, UploadFile, status
 
 from app.schema.article_schema import Category, CreateArticle, ToUpdate
 from app.api.deps import editor_dependency, db_dependency
@@ -17,9 +17,14 @@ router= APIRouter(
 
 # create and publish article    Editor Role
 @router.post("/publish_article")
-async def create_article_publish(to_add: CreateArticle, current_user: editor_dependency, db: db_dependency, file: UploadFile):
+async def create_article_publish(file: UploadFile,
+                                       db: db_dependency,
+                                       current_user: editor_dependency,
+                                       title: str= Form(...),
+                                       content: str= Form(...),
+                                       category: str= Form(...)):
     try:
-        await create_article_publish_service(to_add, current_user, db, file)
+        await create_article_publish_service(file, db, current_user, title, content, category)
     except ValueError as e:
         logger.error(str(e))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail= str(e))
@@ -27,10 +32,15 @@ async def create_article_publish(to_add: CreateArticle, current_user: editor_dep
 
 # create and draft artcile           Editor Role
 
-router.post("/draft_article")
-async def create_article_draft(to_add: CreateArticle, current_user: editor_dependency, db: db_dependency):
+@router.post("/draft_article")
+async def create_article_draft( file: UploadFile,
+                                db: db_dependency,
+                                current_user: editor_dependency,
+                                title: str= Form(...),
+                                content: str= Form(...),
+                                category: str= Form(...)):
     try:
-        await create_article_draft_service(to_add, current_user, db)
+        await create_article_draft_service(file, db, current_user, title, content, category)
     except ValueError as e:
         logger.error(str(e))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail= str(e))
@@ -38,9 +48,9 @@ async def create_article_draft(to_add: CreateArticle, current_user: editor_depen
 
 # # update article    Editor Role
 @router.patch("/update_article/{article_id}")
-async def patch_article(to_update: ToUpdate, article_id: UUID, current_user: editor_dependency, db: db_dependency):
+async def patch_article(article_id: UUID, current_user:editor_dependency, db: db_dependency, title: str | None= Form(None), content: str | None= Form(None), cover_image: UploadFile | None= Form(None), category: Category | None= Form(None)):
     try:
-        await patch_article_service(to_update, article_id, current_user, db)
+        await patch_article_service(article_id, current_user, db, title, content, cover_image, category)
     except ValueError as e:
         logger.error(str(e))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail= str(e))
@@ -50,7 +60,8 @@ async def patch_article(to_update: ToUpdate, article_id: UUID, current_user: edi
 @router.get("/self_articles")
 async def get_all_articles_self_all(current_user: editor_dependency, db: db_dependency):
     try:
-        await get_all_articles_self_all_service(current_user, db)
+        result= await get_all_articles_self_all_service(current_user, db)
+        return result
     except ValueError as e:
         logger.error(str(e))
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= str(e))
@@ -80,15 +91,15 @@ async def get_all_articles_self_draft(current_user: editor_dependency, db: db_de
 
 @router.get("/all_articles")
 async def get_all_articles(db: db_dependency, 
-                           title: str | None,
-                           category: Category | None,
-                           author_id: UUID | None,
+                           title: str | None= None,
+                           category: Category | None= None,
+                           author_name: UUID | None= None,
                            sort_by: str = "created_at",
                            order: str = "desc"
                            ):
     try:
-        await get_all_articles_service(db, title, category, author_id, sort_by, order)
-
+        result= await get_all_articles_service(db, title, category, author_name, sort_by, order)
+        return result
     except ValueError as e:
         logger.error(str(e))
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= str(e))
@@ -96,10 +107,11 @@ async def get_all_articles(db: db_dependency,
 
 
 #get single article     # no need to log in
-@router.get("single_article/{article_id}")
+@router.get("/single_article/{article_id}")
 async def get_article(article_id: UUID, db: db_dependency):
     try:
-        await get_article_service(article_id, db)
+        result= await get_article_service(article_id, db)
+        return result
     except ValueError as e:
         logger.error(str(e))
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= str(e))
