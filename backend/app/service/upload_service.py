@@ -1,7 +1,7 @@
 
 from fastapi import UploadFile
 import cloudinary.uploader
-
+import app.core.cloudinary 
 
 
 
