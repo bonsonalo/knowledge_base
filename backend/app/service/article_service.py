@@ -4,29 +4,36 @@ from app.model.article import Article
 from app.core.logger import logger
 from sqlalchemy import select
 from uuid import UUID
-from fastapi import UploadFile
+from fastapi import Form, UploadFile
 from app.service.upload_service import upload_file
 from app.service.notification_service import create_notification
+from app.model.user import User
 
 
 
 
 # create and publish article    Editor Role
 
-async def create_article_publish_service(to_add: CreateArticle, current_user, db: AsyncSession, file: UploadFile):
+async def create_article_publish_service(file: UploadFile,
+                                       db: AsyncSession,
+                                       current_user,
+                                       title: str= Form(...),
+                                       content: str= Form(...),
+                                       category: str= Form(...)):
     current_id= current_user.get("id")
+    logger.info("got the current id from the current_user")
     try:
 
         cover_img_url =  await upload_file(file, folder= "cover_image")
 
 
         created= Article(
-            title = to_add.title,
-            content= to_add.content,
+            title = title,
+            content= content,
             cover_image= cover_img_url,
             status= "published",
             author_id= current_id,
-            category= to_add.category
+            category= category
         )
 
 
@@ -44,6 +51,7 @@ async def create_article_publish_service(to_add: CreateArticle, current_user, db
             message= "You have published an article",
             db= db
         )
+        logger.info("created_notification")
 
         return {"message": "Article created and published successfully"}
 
@@ -54,18 +62,26 @@ async def create_article_publish_service(to_add: CreateArticle, current_user, db
 
 # create and draft artcile           Editor Role
 
-async def create_article_draft_service(to_add: CreateArticle, current_user, db: AsyncSession, file: UploadFile):
+async def create_article_draft_service(file: UploadFile,
+                                       db: AsyncSession,
+                                       current_user,
+                                       title: str= Form(...),
+                                       content: str= Form(...),
+                                       category: str= Form(...)
+                                       ):
+    logger.info("to get the current id from the current_user")
+
     current_id= current_user.get("id")
     try:
         cover_img_url =  await upload_file(file, folder= "cover_image")
 
         created= Article(
-            title = to_add.title,
-            content= to_add.content,
+            title = title,
+            content= content,
             cover_image= cover_img_url,
             status= "draft",
             author_id= current_id,
-            category= to_add.category
+            category= category
         )
 
         db.add(created)
@@ -84,20 +100,20 @@ async def create_article_draft_service(to_add: CreateArticle, current_user, db: 
 
 # update article    Editor Role
 
-async def patch_article_service(to_update: ToUpdate, article_id: UUID, current_user, db: AsyncSession):
+async def patch_article_service(article_id: UUID, current_user, db: AsyncSession, title: str | None= Form(None), content: str | None= Form(None), cover_image: UploadFile | None= Form(None), category: Category | None= Form(None)):
     current_id= current_user.get("id")
     try:
         article= await db.scalar(select(Article).where(Article.author_id == current_id).where(Article.id == article_id))
         if not article:
             raise ValueError("article not found")
-        if to_update.title is not None:
-            article.title = to_update.title
-        if to_update.category is not None:
-            article.category = to_update.category
-        if to_update.content is not None:
-            article.content = to_update.content
-        if to_update.cover_image is not None:
-            article.cover_image = to_update.cover_image
+        if title is not None:
+            article.title = title
+        if category is not None:
+            article.category = category
+        if content is not None:
+            article.content = content
+        if cover_image is not None:
+            article.cover_image = cover_image
 
         await db.commit()
         await db.refresh(article)
@@ -146,9 +162,9 @@ async def get_all_articles_self_draft_service(current_user, db: AsyncSession):
 # get all articles     # no need to login
 
 async def get_all_articles_service(db: AsyncSession, 
-                           title: str | None,
-                           category: Category | None,
-                           author_id: UUID | None,
+                           title: str | None= None,
+                           category: Category | None= None,
+                           author_name: UUID | None= None,
                            sort_by: str = "created_at",
                            order: str = "desc"
                            ):
@@ -161,8 +177,8 @@ async def get_all_articles_service(db: AsyncSession,
             query= query.where(Article.title.ilike(f"%{title}%"))
         if category is not None:
             query= query.where(Article.category == category)
-        if author_id is not None:
-            query= query.where(Article.author_id == author_id)
+        if author_name is not None:
+            query= query.join(Article.user).where(User.name.ilike(f"%{author_name}%"))
         if sort_by not in allowed_sort:
             raise  ValueError(f"Invalid sort field: {sort_by}")
         if order.lower() not in allowed_orders:
@@ -185,6 +201,7 @@ async def get_article_service(article_id: UUID, db: AsyncSession):
     try:
         article= await db.scalar(select(Article).where((Article.id == article_id)).where(Article.status == "published"))
         return article
+    
     except ValueError as e:
         logger.error(str(e))
         raise ValueError(str(e))
