@@ -36,7 +36,6 @@ export interface Article {
     cover_image: string | null
     status: "published" | "draft"
     created_at: string
-
 }
 
 export interface User {
