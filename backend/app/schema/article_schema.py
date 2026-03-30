@@ -22,16 +22,16 @@ class Category(str, Enum):
     other = "other"
 
 
-class CreateArticle(BaseModel):
-    title: str
-    content: str
-    category: Category
+# class CreateArticle(BaseModel):
+#     title: str
+#     content: str
+#     category: Category
     
 
-class ToUpdate(BaseModel):
-    title: str | None= None
-    content: str | None= None
-    cover_image: str | None= None
-    category: Category | None= None
+# class ToUpdate(BaseModel):
+#     title: str | None= None
+#     content: str | None= None
+#     cover_image: str | None= None
+#     category: Category | None= None
 
 
