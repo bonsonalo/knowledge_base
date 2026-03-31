@@ -133,3 +133,17 @@ async def refresh_token_service(res, request):
     )
 
     return {"message": "refreshed succesfully"}
+
+
+    # logout service
+
+async def logout_service(response):
+    response.delete_cookie(
+        key= "access_token"
+    )
+    response.delete_cookie(
+        key= "refresh_token"
+    )
+
+    return {"message": "logout succesfull"}
+    
