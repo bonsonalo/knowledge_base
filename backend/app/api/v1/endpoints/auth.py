@@ -1,7 +1,7 @@
 from fastapi import HTTPException, APIRouter, Request, status, Response
 from app.api.deps import db_dependency
 from app.schema.auth_schema import LoginInfo, UserSignUp
-from app.service.auth_service import login_service, promote_user_service, refresh_token_service, register_user
+from app.service.auth_service import login_service, logout_service, promote_user_service, refresh_token_service, register_user
 from app.core.logger import logger
 from uuid import UUID
 from app.api.deps import admin_dependency
@@ -62,3 +62,16 @@ async def refresh_access_token(res: Response, request: Request):
           raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail= "refresh token Expired")
      except JWTError:
           raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail= "invalid refresh token")
+     
+
+
+# logout 
+
+@router.post("/logout")
+async def logout(response: Response):
+     try:
+          return await logout_service(response)
+     except ValueError as e:
+          logger.error(str(e))
+          raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail= str(e))
+     
