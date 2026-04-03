@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from app.api.v1.routes import routers
-from backend.app.core.middleware import add_middleware
+from app.core.middleware import add_middleware
 
 
 @asynccontextmanager
