@@ -1,8 +1,8 @@
 from uuid import UUID
 
-from fastapi import FastAPI, Form, HTTPException, APIRouter, UploadFile, status
+from fastapi import Form, HTTPException, APIRouter, UploadFile, status
 
-from app.schema.article_schema import Category, CreateArticle, ToUpdate
+from app.schema.article_schema import Category
 from app.api.deps import editor_dependency, db_dependency
 from app.service.article_service import create_article_draft_service, create_article_publish_service, delete_article_service, delete_article_service_admin, get_all_articles_self_all_service, get_all_articles_self_draft_service, get_all_articles_self_published_service, get_all_articles_service, get_article_editor_service, get_article_service, patch_article_service
 from app.core.logger import logger
