@@ -1,4 +1,4 @@
-from app.schema.article_schema import Category, CreateArticle, ToUpdate
+from app.schema.article_schema import Category
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.model.article import Article
 from app.core.logger import logger
@@ -164,7 +164,7 @@ async def get_all_articles_self_draft_service(current_user, db: AsyncSession):
 async def get_all_articles_service(db: AsyncSession, 
                            title: str | None= None,
                            category: Category | None= None,
-                           author_name: UUID | None= None,
+                           author_name: str | None= None,
                            sort_by: str = "created_at",
                            order: str = "desc"
                            ):
@@ -178,7 +178,7 @@ async def get_all_articles_service(db: AsyncSession,
         if category is not None:
             query= query.where(Article.category == category)
         if author_name is not None:
-            query= query.join(Article.user).where(User.name.ilike(f"%{author_name}%"))
+            query= query.join(Article.user).where(User.first_name.ilike(f"%{author_name}%"))
         if sort_by not in allowed_sort:
             raise  ValueError(f"Invalid sort field: {sort_by}")
         if order.lower() not in allowed_orders:
