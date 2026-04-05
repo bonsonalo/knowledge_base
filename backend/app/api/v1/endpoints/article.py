@@ -93,7 +93,7 @@ async def get_all_articles_self_draft(current_user: editor_dependency, db: db_de
 async def get_all_articles(db: db_dependency, 
                            title: str | None= None,
                            category: Category | None= None,
-                           author_name: UUID | None= None,
+                           author_name: str | None= None,
                            sort_by: str = "created_at",
                            order: str = "desc"
                            ):
