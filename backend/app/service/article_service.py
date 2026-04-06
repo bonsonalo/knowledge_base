@@ -2,7 +2,7 @@ from app.schema.article_schema import Category
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.model.article import Article
 from app.core.logger import logger
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from uuid import UUID
 from fastapi import Form, UploadFile
 from app.service.upload_service import upload_file
@@ -173,12 +173,16 @@ async def get_all_articles_service(db: AsyncSession,
     allowed_orders= {"asc", "desc"}
     try:
         query= select(Article).where(Article.status == "published")
-        if title is not None:
+        if title is not None or author_name is not None:
+            query= query.join(Article.user).where(
+                or_(
+                    Article.title.ilike(f"%{title}%") if title else False,
+                    User.first_name.ilike(f"%{author_name}%") if author_name else False
+                )
+            )
             query= query.where(Article.title.ilike(f"%{title}%"))
         if category is not None:
             query= query.where(Article.category == category)
-        if author_name is not None:
-            query= query.join(Article.user).where(User.first_name.ilike(f"%{author_name}%"))
         if sort_by not in allowed_sort:
             raise  ValueError(f"Invalid sort field: {sort_by}")
         if order.lower() not in allowed_orders:
