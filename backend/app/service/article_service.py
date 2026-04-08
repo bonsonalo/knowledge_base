@@ -1,10 +1,12 @@
+from typing import Optional
+
 from app.schema.article_schema import Category
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.model.article import Article
 from app.core.logger import logger
 from sqlalchemy import or_, select
 from uuid import UUID
-from fastapi import Form, UploadFile
+from fastapi import File, Form, UploadFile
 from app.service.upload_service import upload_file
 from app.service.notification_service import create_notification
 from app.model.user import User
@@ -100,7 +102,7 @@ async def create_article_draft_service(file: UploadFile,
 
 # update article    Editor Role
 
-async def patch_article_service(article_id: UUID, current_user, db: AsyncSession, title: str | None= Form(None), content: str | None= Form(None), cover_image: UploadFile | None= Form(None), category: Category | None= Form(None)):
+async def patch_article_service(article_id: UUID, current_user, db: AsyncSession, title: str | None= Form(None), content: str | None= Form(None), cover_image: Optional[UploadFile] | None= File(None), category: Category | None= Form(None)):
     current_id= current_user.get("id")
     try:
         article= await db.scalar(select(Article).where(Article.author_id == current_id).where(Article.id == article_id))
@@ -113,7 +115,8 @@ async def patch_article_service(article_id: UUID, current_user, db: AsyncSession
         if content is not None:
             article.content = content
         if cover_image is not None:
-            article.cover_image = cover_image
+            print("cover image received:", cover_image.filename)
+            article.cover_image = await upload_file(cover_image ,folder="cover_image")
 
         await db.commit()
         await db.refresh(article)
