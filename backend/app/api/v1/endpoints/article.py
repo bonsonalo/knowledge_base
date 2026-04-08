@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import Form, HTTPException, APIRouter, UploadFile, status
+from fastapi import File, Form, HTTPException, APIRouter, UploadFile, status
 
 from app.schema.article_schema import Category
 from app.api.deps import editor_dependency, db_dependency
@@ -48,9 +48,11 @@ async def create_article_draft( file: UploadFile,
 
 # # update article    Editor Role
 @router.patch("/update_article/{article_id}")
-async def patch_article(article_id: UUID, current_user:editor_dependency, db: db_dependency, title: str | None= Form(None), content: str | None= Form(None), cover_image: UploadFile | None= Form(None), category: Category | None= Form(None)):
+async def patch_article(article_id: UUID, current_user:editor_dependency, db: db_dependency, title: str | None= Form(None), content: str | None= Form(None), cover_image: UploadFile | None= File(None), category: Category | None= Form(None)):
     try:
-        await patch_article_service(article_id, current_user, db, title, content, cover_image, category)
+        print("cover_image received in router:", cover_image)
+        print("filename:", cover_image.filename if cover_image else "None")
+        return await patch_article_service(article_id, current_user, db, title, content, cover_image, category)
     except ValueError as e:
         logger.error(str(e))
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail= str(e))
