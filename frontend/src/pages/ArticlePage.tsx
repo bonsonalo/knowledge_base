@@ -1,4 +1,4 @@
-import { Loader, Search, SlidersHorizontal } from 'lucide-react';
+import { Loader, SlidersHorizontal } from 'lucide-react';
 import { NavBar } from "../components/NavBar"
 import { ArticleCard } from '../components/ArticleCard';
 import { useEffect, useState } from 'react';
