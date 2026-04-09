@@ -4,9 +4,9 @@ import { Diamond } from "lucide-react"
 export function Footer() {
     return (
         <footer className="bg-white py-10 text-center border mt-40" style={{marginInline: "auto", backgroundColor: "#FCFCFC", borderColor: "#cfcfcf"}}>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 w-11/12 lg:w-10/12 mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 w-11/12 lg:w-10/12 mx-auto lg:py-8">
                 <div className="mx-auto">
-                    <div className="flex justify-center mb-4 gap-2 md:gap-0">
+                    <div className="flex justify-center mb-4 gap-2 md:gap-0 lg:gap-3">
                         <div style={{backgroundColor: "#3899FA", padding: "3px", borderRadius: "6px"}} className="h-fit">
                             <Diamond color="white" size={24}/>
                         </div>
