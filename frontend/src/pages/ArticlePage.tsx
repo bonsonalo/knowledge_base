@@ -109,7 +109,7 @@ export function ArticlePage() {
                         <div className=''>
                             <img src={heroImage} alt="Knowledge base image" className='rounded-3xl w-full h-full object-cover'/>
                         </div>
-                        <div className='absolute bottom-20 left-10' style={{color: "#fff"}}>
+                        <div className='absolute bottom-20 lg:bottom-8 left-10' style={{color: "#fff"}}>
                             <div className='opacity-70 font-semibold' style={{fontSize: "15px"}}>
                                 Featured Today
                             </div>
