@@ -14,7 +14,7 @@ export function ArticleCard({article}: ArticleCardProps) {
     return (
         <Link to={`articles/${article.id}`} className="shadow-lg rounded-xl border-0 flex flex-col h-full" style={{borderColor: "#DEDFE3"}}>
             <div className="relative">
-                <img src= {article.cover_image} className="h-35 object-cover w-full rounded-t-md"/>
+                <img src= {article.cover_image ?? undefined} className="h-35 object-cover w-full rounded-t-md"/>
                 <div className="absolute bottom-26 left-2 text-base text-white p-px px-1 rounded-xl" style={{backgroundColor: "#0a84ff"}}>
                     {article.category}
                 </div>
