@@ -1,11 +1,8 @@
-import { Search } from "lucide-react"
 import { CATEGORIES, type Category } from "../types"
 
 
 
 interface SideBarProps {
-    search: string
-    setSearch: (id: string) => void
     category: Category | string
     setCategory: (id: string) => void
     onClose: () => void
@@ -13,23 +10,17 @@ interface SideBarProps {
 
 
 
-export function SideBar({search, setSearch, category, setCategory, onClose}: SideBarProps) {
+export function SideBar({category, setCategory, onClose}: SideBarProps) {
 
     return (
-        <div>
-            <button onClick={onClose}>X</button>
-            <div>SEARCH</div>
-            <div>
-                <input type="text" placeholder="Keywords..." value={search} onChange={(e) => setSearch(e.target.value)} />
-                <Search />
-            </div>
-            <div></div>
-            <div>
-                <div>CATEGORY</div>
+        <div style={{fontWeight: "400", color: "grey"}}>
+            <div className="ml-3">
+                <div className="mb-4 text-sm font-bold">CATEGORY</div>
+                <div className="border mb-6 w-10/12" style={{borderColor: "#cfcfcf"}}></div>
                 {CATEGORIES.map((item) => (
-                    <div key={item}>
-                        <input type="checkbox" checked={category === item} onChange={() => setCategory(category === item ? "": item)}/>
-                        <div> {item}</div>
+                    <div key={item} className="flex gap-3 mb-2 text-sm">
+                        <input type="checkbox" className="scale-80 cursor-pointer" checked={category === item} onChange={() => setCategory(category === item ? "": item)} onClick={() => onClose()}/>
+                        <div className="text-sm"> {item}</div>
                     </div>
                 ))}
             </div>
