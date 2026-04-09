@@ -7,7 +7,7 @@ import type { Article } from '../types';
 import { SideBar } from '../components/SideBar';
 import { X } from 'lucide-react';
 import { Footer } from '../components/Footer';
-
+import {heroImage} from './../../assets/knowlegde final.jpg'
 
 export function ArticlePage() {
 
@@ -107,7 +107,7 @@ export function ArticlePage() {
                     </div>
                     <div className='relative hidden lg:block'>
                         <div className=''>
-                            <img src="./../../assets/knowlegde final.jpg" alt="Knowledge base image" className='rounded-3xl w-full h-full object-cover'/>
+                            <img src={heroImage} alt="Knowledge base image" className='rounded-3xl w-full h-full object-cover'/>
                         </div>
                         <div className='absolute bottom-20 left-10' style={{color: "#fff"}}>
                             <div className='opacity-70 font-semibold' style={{fontSize: "15px"}}>
