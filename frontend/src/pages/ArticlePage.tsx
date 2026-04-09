@@ -7,7 +7,7 @@ import type { Article } from '../types';
 import { SideBar } from '../components/SideBar';
 import { X } from 'lucide-react';
 import { Footer } from '../components/Footer';
-import {heroImage} from './../../assets/knowlegde_final.jpg'
+import heroImage from './../../assets/knowlegde_final.jpg'
 
 export function ArticlePage() {
 
