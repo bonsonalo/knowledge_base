@@ -1,6 +1,6 @@
 fastapi
 uvicorn[standard]
-SQLAlchemy==1.4.50
+SQLAlchemy>=2.0.0
 alembic
 asyncpg
 python-jose[cryptography]
