@@ -1,27 +1,15 @@
-# Core Framework
 fastapi
-uvicorn[standard]  # Missing! Add this for ASGI server
-
-# Database
+uvicorn[standard]
 SQLAlchemy==1.4.50
 alembic
-
-# Authentication & Security
-python-jose[cryptography]  # For JWT
-passlib[bcrypt]  # For password hashing
+asyncpg
+python-jose[cryptography]
+passlib[bcrypt]
 PyJWT==2.7.0
-
-# Data Validation
 pydantic
-pydantic-settings  # For BaseSettings
-email-validator  # For EmailStr
-
-# HTTP & Utilities
+pydantic-settings
+email-validator
 requests
-python-multipart  # For form data/file uploads
-
-# File Upload
+python-multipart
 cloudinary
-
-# Development/Production
-python-dotenv  # For .env files
+python-dotenv
