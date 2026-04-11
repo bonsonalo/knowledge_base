@@ -58,7 +58,7 @@ export function ArticlePage() {
 
 
     return (
-        <div style={{backgroundColor: "#FFFFFF"}} className='flex flex-col min-h-screen mx-auto'>
+        <div style={{backgroundColor: "#FFFFFF"}} className='flex flex-col min-h-screen mx-auto overflow-x-hidden'>
             <NavBar />
             <div style={{backgroundColor: "#F0F7FF", position: "relative"}} className='py-20 w-screen'>
                 <div className='flex lg:grid lg:grid-cols-2 lg:gap-30 mx-auto w-11/12 lg:w-10/12'>
@@ -122,7 +122,6 @@ export function ArticlePage() {
             </div>
 
             {loading && <Loader /> }
-            { error && <div>{error}</div> }
             <div className='flex justify-end gap-4 mr-4 mt-6 items-center md:w-11/12 lg:w-10/12 md:mx-auto'>
                 <div className='flex text-xl items-center'>
                     <div className='flex gap-4'> 
@@ -162,12 +161,12 @@ export function ArticlePage() {
                     <SideBar category={category} setCategory={setCategory} onClose={() => setIsFilterOpen(false)}/>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-fit gap-7 md:gap-5 mx-auto w-11/12 mb-12">
-                    {articles.map((article) => (
+                    { error ? <div>{error}</div> : articles.map((article) => (
                         <ArticleCard key={article.id} article={article} />
                     ))}
                 </div>
             </div>
-            <div className='mt-auto'>
+            <div className='mt-auto overflow-x-hidden'>
                 < Footer />
             </div>
         </div>
