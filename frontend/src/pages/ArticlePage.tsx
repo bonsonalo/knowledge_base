@@ -120,8 +120,6 @@ export function ArticlePage() {
                     </div>
                 </div>
             </div>
-
-            {loading && <Loader /> }
             <div className='flex justify-end gap-4 mr-4 mt-6 items-center md:w-11/12 lg:w-10/12 md:mx-auto'>
                 <div className='flex text-xl items-center'>
                     <div className='flex gap-4'> 
