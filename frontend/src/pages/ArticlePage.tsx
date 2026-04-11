@@ -140,7 +140,7 @@ export function ArticlePage() {
                     {isFilterOpen? < X onClick={() => setIsFilterOpen(false)}/> : <button className='' onClick={() => setIsFilterOpen(true)}><SlidersHorizontal /></button>}
                 </div>
             </div>
-            <div className='md:grid md:grid-cols-[1fr_3fr] mt-12 mx-auto md:gap-1 w-11/12 lg:w-10/12'>
+            <div className='md:grid md:grid-cols-[20%_80%] mt-12 mx-auto md:gap-1 w-11/12 lg:w-10/12'>
                 <div className={`
                     md:block
                     transition-all    
