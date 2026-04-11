@@ -161,6 +161,7 @@ export function ArticlePage() {
                     <SideBar category={category} setCategory={setCategory} onClose={() => setIsFilterOpen(false)}/>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-fit gap-7 md:gap-5 mx-auto w-11/12 mb-12">
+                    {loading && <Loader /> }
                     { error ? <div>{error}</div> : articles.map((article) => (
                         <ArticleCard key={article.id} article={article} />
                     ))}
