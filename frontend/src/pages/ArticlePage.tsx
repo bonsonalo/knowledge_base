@@ -80,11 +80,12 @@ export function ArticlePage() {
                                     placeholder="Search articles..." 
                                     value={search} 
                                     onChange={(e) => setSearch(e.target.value)}
-                                    className='px-2 w-52 h-10 md:w-full'
+                                    className='px-2 w-52 h-10 md:w-full focus:outline-none'
                                     style={{ borderRadius: "10px", backgroundColor: "#fff"}}
                                     />
                             </div>
-                            <div style={{color: "#fff", backgroundColor: "#3899FA"}} className='p-1 text-base lg:px-1 rounded-xl items-center justify-center flex'>
+                            <div style={{color: "#fff"}} className='p-1 text-base lg:px-1 rounded-xl items-center justify-center flex cursor-pointer bg-[#3899FA] hover:brightness-110 hover:scale-105 transition ease-in-out duration-300">
+                            '>
                                 Browse
                             </div>
                         </div>
