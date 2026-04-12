@@ -69,7 +69,7 @@ export function LoginPage() {
                                 style={{fontWeight: "500"}}
                             >
                                     Password</div>
-                            <Link to= "#" className="text-[#3899FA] brightness-120 text-sm">Forgot password?</Link>
+                            <Link to= "#" className="text-[#3899FA] text-sm">Forgot password?</Link>
                         </div>
                         <div>
                             <input 
