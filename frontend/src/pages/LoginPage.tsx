@@ -10,7 +10,7 @@ export function LoginPage() {
     const [password, setPassword]= useState("");
 
 
-    const {error, status, isAuthenticated, login} = useAuth();
+    const { status, isAuthenticated, login} = useAuth();
     const navigate= useNavigate();
 
     const [hideMode, setHideMode] = useState(true)
