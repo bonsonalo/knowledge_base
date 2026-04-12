@@ -1,10 +1,11 @@
 import { useAuth } from "../state/hook"
 import { Loader } from "lucide-react";
 import { Diamond, Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function NavBar() {
     const { currentUser, status } = useAuth();
-
+    const navigate= useNavigate();
 
     return (
         <>
@@ -21,7 +22,7 @@ export function NavBar() {
                         <Bell />
                         <img src={currentUser.avatar ?? undefined} alt="Profile"/> 
                     </div> : 
-                    <div className="text-sm border p-1 rounded-lg" style={{color: "#5A5F68"}}>
+                    <div className="text-sm border p-1 rounded-lg cursor-pointer" style={{color: "#5A5F68"}} onClick={() => navigate("/login")}>
                         Login/Signup
                     </div>}
                 </div>
