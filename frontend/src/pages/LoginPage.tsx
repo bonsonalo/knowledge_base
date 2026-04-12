@@ -91,10 +91,10 @@ export function LoginPage() {
                         <div className="text-sm" style={{fontWeight: "500"}}>Remember me for 30 days</div>
                     </div>
                     <div className="flex gap-2 justify-center bg-[#3899FA] mb-5 py-2 rounded-md text-sm hover:cursor-pointer"  onClick={handleSubmit}>
-                        <button>
+                        <button className="text-[#fff]">
                             Sign in
                         </button>
-                        <MoveRight />
+                        <MoveRight color="white"/>
                     </div>
                     <div 
                         className="-mx-5 border-4 border-gray-400 mb-4"
