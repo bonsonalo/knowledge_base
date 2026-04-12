@@ -110,9 +110,9 @@ export function LoginPage() {
 
                 <div className="text-gray-400 text-sm mb-3 text-center flex">© 2026 Knowledge Base. Trusted by 5,000+ contributors worldwide.</div>
                 <div className="flex justify-center text-sm gap-2 text-gray-400">
-                    <div>Privacy Policy</div>
-                    <div>Terms of Service</div>
-                    <div>Help Center</div>
+                    <Link to={"#"} className="hover:brightness-50">Privacy Policy</Link>
+                    <Link to={"#"} className="hover:brightness-50">Terms of Service</Link>
+                    <Link to={"#"} className="hover:brightness-50">Help Center</Link>
                 </div>
             </div>
         </div>
