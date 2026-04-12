@@ -41,11 +41,11 @@ export function LoginPage() {
                 <div className="font-bold text-xl mb-2 flex justify-center">Welcome Back</div>
                 <div className="text-center opacity-90 mb-6">Access your professional knowledge library</div>
                 <div 
-                    className="flex flex-col w-full px-5 rounded-lg shadow-lg mb-9"
+                    className="flex flex-col w-full px-5 lg:px-10 lg:py-3 rounded-lg shadow-lg mb-9"
                     style={{border: ".3px solid #cfcfcf", backgroundColor: "#FFFFFF"}}
                     >                    
                     <div className="mr-auto text-xl opacity-80 font-semibold pt-6">Sign In</div>
-                    <div className="text-sm font-normal opacity-80 mt-2 mb-4">Enter your credentials to manage and read articles</div>
+                    <div className="text-sm font-normal opacity-80 mt-3 mb-4">Enter your credentials to manage and read articles</div>
                     <div className="flex flex-col gap-2 mb-5">
                         <div 
                             className="font-base opacity-80 text-base"
