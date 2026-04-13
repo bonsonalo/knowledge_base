@@ -19,7 +19,7 @@ export function LoginPage() {
 
     useEffect(() => {
         if (isAuthenticated && status== 'succeeded') {
-            navigate('/articles')
+            navigate('/')
         }
     }, [isAuthenticated, status, navigate])
 
@@ -90,8 +90,8 @@ export function LoginPage() {
                         <input type="checkbox" className="scale-110 cursor-pointer"/>
                         <div className="text-sm" style={{fontWeight: "500"}}>Remember me for 30 days</div>
                     </div>
-                    <div className="flex gap-2 justify-center bg-[#3899FA] mb-5 py-2 rounded-md text-sm hover:cursor-pointer"  onClick={handleSubmit}>
-                        <button className="text-[#fff]">
+                    <div className="flex gap-2 justify-center bg-[#3899FA] mb-5 py-2 rounded-md text-sm"  onClick={handleSubmit}>
+                        <button className="text-[#fff] hover:cursor-pointer">
                             Sign in
                         </button>
                         <MoveRight color="white"/>
