@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { LoginPage } from "./pages/LoginPage";
+import { SignUpPage } from "./pages/SignUpPages";
 import { AuthInitializer } from "./components/AuthInitializer";
 import { ArticlePage } from "./pages/ArticlePage";
 
@@ -10,6 +11,7 @@ export default function App(){
     <AuthInitializer />
     <Routes>
       <Route path="/login" element= {<LoginPage />}/>
+      <Route path="/signup" element= {<SignUpPage />} />
       <Route path="/" element= {<ArticlePage />} />
     </Routes>
     </>
