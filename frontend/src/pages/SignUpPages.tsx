@@ -14,7 +14,7 @@ export function SignUpPage() {
     const [error, setError] = useState("");
 
 
-    const { status, isAuthenticated, login, fetchUser} = useAuth();
+    const { status, isAuthenticated, login} = useAuth();
     const navigate= useNavigate();
 
     const [hideMode, setHideMode] = useState(true)
@@ -23,7 +23,7 @@ export function SignUpPage() {
 
     useEffect(() => {
         if (isAuthenticated && status== 'succeeded') {
-            navigate('/articles')
+            navigate('/')
         }
     }, [isAuthenticated, status, navigate])
 
@@ -31,7 +31,9 @@ export function SignUpPage() {
         try{
             await api.post("/api/v1/auth/signup", {first_name: firstName, last_name: lastName, email, password});
             await login(email, password);
-        }
+            navigate('/')
+
+        }   
         catch(_error){
             setError("Sign Up failed")
         }
@@ -145,7 +147,7 @@ export function SignUpPage() {
 
                     </div>
                     <div className="w-full text-sm mb-2">
-                        Don't have an account? <Link to={"/signup"} className="text-[#3899FA] font-semibold text-sm">Create an account</Link>
+                        You already have an account? <Link to={"/login"} className="text-[#3899FA] font-semibold text-sm">Log in</Link>
                     </div>
 
                 </div>
