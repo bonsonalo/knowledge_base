@@ -20,12 +20,8 @@ export const useAuth= () => {
         error: auth.error,
 
 
-        login: (email: string, password: string) => {
-            dispatch(loginUser({email, password}))
-        },
-        logout: () => {
-            dispatch(logoutUser())
-        },
+        login: (email: string, password: string) => dispatch(loginUser({email, password})),
+        logout: () => dispatch(logoutUser()),
         fetchUser: () => dispatch(fetchUserProfile()),
         clearError: () => dispatch(clearError()),
         forceLogout: () => dispatch(forceLogout())
