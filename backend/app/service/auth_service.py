@@ -47,15 +47,16 @@ async def register_user(user_info: UserSignUp, db: AsyncSession,  res):
         value= access_token,
         secure= True,
         httponly= True,
-        samesite= "lax",
-        max_age= 20 * 60
+        samesite= "none",
+        max_age= 20 * 60,
+        # domain= ".vercel.app"
     )
     res.set_cookie(
         key= "refresh_token",
         value= refresh_token,
         secure= True,
         httponly= True,
-        samesite= "lax",
+        samesite= "none",
         max_age= 30 * 24 * 60 * 60
     )
 
@@ -78,7 +79,7 @@ async def login_service(user_info: LoginInfo, db: AsyncSession, res):
         value= access_token,
         secure= True,
         httponly= True,
-        samesite= "lax",
+        samesite= "none",
         max_age= 20 * 60
     )
     res.set_cookie(
@@ -86,7 +87,7 @@ async def login_service(user_info: LoginInfo, db: AsyncSession, res):
         value= refresh_token,
         secure= True,
         httponly= True,
-        samesite= "lax",
+        samesite= "none",
         max_age= 30 * 24 * 60 * 60
     )
 
@@ -112,6 +113,8 @@ async def promote_user_service(user_id: uuid.UUID, new_role: Role, db: AsyncSess
 
 async def refresh_token_service(res, request):
     refresh_token= request.cookies.get("refresh_token")
+    if not refresh_token:
+        raise ValueError("No refresh token provided")
     payload= jwt.decode(refresh_token, settings.SECRET_KEY, algorithms= [settings.ALGORITHM])
     if payload.get("token_type") != "refresh":
         logger.error("The token type is not refresh_token")
@@ -128,7 +131,7 @@ async def refresh_token_service(res, request):
         value= new_access_token,
         secure= True,
         httponly= True,
-        samesite= "lax",
+        samesite= "none",
         max_age= 20 * 60
     )
 
