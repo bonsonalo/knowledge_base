@@ -11,18 +11,27 @@ export default api
 
 
 // interceptor for token refresh
+let isRefreshing = false;
 
-api.interceptors.request.use(
+api.interceptors.response.use(
     (response) => response, // if success, pass through
     async (error) => {
-        if (error.response?.status == 401) { // if 401 error happens(invalid token)
+        const originalRequest = error.config;
+        // true when the 401 came from the refresh endpoint itself
+        const isRefreshCall = originalRequest?.url?.includes("/api/v1/auth/refresh");
+        // _retry prevents the retried request from re-entering this block if it
+        // also gets a 401 — without it the interceptor loops: refresh → retry → 401
+        // → refresh → retry → 401 forever
+        if (error.response?.status === 401 && !isRefreshing && !isRefreshCall && !originalRequest._retry) {
+            originalRequest._retry = true;
+            isRefreshing = true;
             try{
                 await api.post("/api/v1/auth/refresh");
-                return api.request(error.config) // Retry original request
+                isRefreshing = false;
+                return api.request(originalRequest)
             }
             catch{
-                // Refresh failed - redirect to login
-                window.location.href= "/login" // we could have used navigate() but window.... is better because it forces it, navigate is with in react, but window is outside of it
+                isRefreshing = false;
             }
         }
         return Promise.reject(error)
