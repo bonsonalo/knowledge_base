@@ -5,12 +5,13 @@ import { useEffect } from "react";
 
 export function AuthInitializer() {
     const { fetchUser, status, isAuthenticated }= useAuth();
-
+    console.log("AuthInitializer effect running", { status, isAuthenticated });
     useEffect(() => {
         if (status === 'idle' && !isAuthenticated) {
+            console.log("Calling fetchUserProfile");
             fetchUser();
         }
-    }, [fetchUser, status, isAuthenticated])
+    }, [status, isAuthenticated])
 
     return null;
 }
