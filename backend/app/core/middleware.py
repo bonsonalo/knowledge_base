@@ -9,7 +9,7 @@ def add_middleware(app: FastAPI):
         CORSMiddleware,
         allow_origins= [
             "http://localhost:5173",
-            "http://localhost:5174/",
+            "http://localhost:5174",
             "https://knowledge-base-tcp8.vercel.app"
         ],
         allow_credentials= True,
