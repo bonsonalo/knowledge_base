@@ -39,7 +39,7 @@ export const logoutUser= createAsyncThunk(
         try{
             await api.post("/api/v1/auth/logout");
         }
-        catch (error: any) {
+        catch (error: unknown) {
             return rejectWithValue("logout failed")
         }
     }
@@ -48,11 +48,14 @@ export const logoutUser= createAsyncThunk(
 export const fetchUserProfile= createAsyncThunk<User>(
     'auth/profile',
     async (_, { rejectWithValue}) => {
+        console.log("fetchUserProfile thunk executing");
         try{
             const response= await api.get("/api/v1/me/")
+            console.log("fetchUserProfile success:", response.data);
             return response.data
         }
-        catch (error: any) {
+        catch (error: unknown) {
+            console.log("fetchUserProfile failed:", error);
             return rejectWithValue("could not get user profile")
         }
     }
