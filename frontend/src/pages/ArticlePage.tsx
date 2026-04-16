@@ -1,5 +1,4 @@
-import { Loader, SlidersHorizontal } from 'lucide-react';
-import { NavBar } from "../components/NavBar"
+import { Loader, MoveRight, SlidersHorizontal } from 'lucide-react';
 import { ArticleCard } from '../components/ArticleCard';
 import { useEffect, useState } from 'react';
 import api from '../utils/api';
@@ -8,6 +7,7 @@ import { SideBar } from '../components/SideBar';
 import { X } from 'lucide-react';
 import { Footer } from '../components/Footer';
 import heroImage from './../../assets/knowlegde_final.jpg'
+import { Link } from 'react-router';
 
 export function ArticlePage() {
 
@@ -37,7 +37,7 @@ export function ArticlePage() {
                     setArticles(response.data);
                     setLoading(false);
                 }
-                catch (error) {
+                catch (_error) {
                     setLoading(false)
                     setError("Failed to fetch articles");
                 }
@@ -58,8 +58,8 @@ export function ArticlePage() {
 
 
     return (
-        <div style={{backgroundColor: "#FFFFFF"}} className='flex flex-col min-h-screen mx-auto overflow-x-hidden'>
-            <NavBar />
+        <div style={{backgroundColor: "#FFFFFF"}} className='flex relative flex-col min-h-screen mx-auto overflow-x-hidden'>
+            {/* <NavBar /> */}
             <div style={{backgroundColor: "#F0F7FF", position: "relative"}} className='py-20 w-screen'>
                 <div className='flex lg:grid lg:grid-cols-2 lg:gap-30 mx-auto w-11/12 lg:w-10/12'>
                     <div className='flex flex-col justify-start'>
@@ -139,7 +139,7 @@ export function ArticlePage() {
                     {isFilterOpen? < X onClick={() => setIsFilterOpen(false)}/> : <button className='' onClick={() => setIsFilterOpen(true)}><SlidersHorizontal /></button>}
                 </div>
             </div>
-            <div className='md:grid md:grid-cols-[20%_80%] mt-12 mx-auto md:gap-1 w-11/12 lg:w-10/12'>
+            <div className='md:grid md:grid-cols-[30%_70%] mt-12 mx-auto md:gap-1  lg:grid-cols-[20%_80%] lg:gap-4 w-11/12 lg:w-10/12'>
                 <div className={`
                     md:block
                     transition-all    
@@ -159,15 +159,31 @@ export function ArticlePage() {
                 >
                     <SideBar category={category} setCategory={setCategory} onClose={() => setIsFilterOpen(false)}/>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-fit gap-7 md:gap-5 mx-auto w-11/12 mb-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-fit gap-7 md:gap-5 lg:gap-8 mx-auto w-11/12 mb-12">
                     {loading && <Loader /> }
                     { error ? <div>{error}</div> : articles.map((article) => (
                         <ArticleCard key={article.id} article={article} />
                     ))}
                 </div>
             </div>
+            <div className='bg-[#D7EBFE] py-6 md:py-8 mx-auto w-11/12 text-xs rounded-md px-3 md:px-6 md:w-5/12 md:justify-end md:ml-auto md:mr-45'>
+                <div className='bg-[#3899FA] w-fit py-1 px-2 rounded-xl font-semibold mb-3 '>Spotlight Series</div>
+                <div className='md:flex md:gap-5 md:justify-between'>
+                    <div>
+                        <div className='text-base font-bold mb-3'>
+                            The Engineering Management Handbook
+                        </div>
+                        <div className='opacity-70'>
+                            A curated collection of over 20 articles covering everything from hiring strategies to conflict resolution and performance reviews.
+                        </div>
+                    </div>
+                    <Link to={"#"} className='flex justify-center py-5'>
+                        < MoveRight color='black' size={42} className=' p-3 bg-[#3899FA] mx-auto rounded-full' />
+                    </Link>
+                </div>
+            </div>
             <div className='mt-auto overflow-x-hidden'>
-                < Footer />
+                {/* < Footer /> */}
             </div>
         </div>
     )
