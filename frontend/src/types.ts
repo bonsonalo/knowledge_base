@@ -39,10 +39,8 @@ export const CATEGORIES = [
   "other"
 ] as const
 export interface ArticleAuthor {
-    id: string
     first_name: string
     last_name: string
-    email: string
     avatar: string | null
 }
 
@@ -54,7 +52,7 @@ export interface Article {
     cover_image: string | null
     status: "published" | "draft"
     created_at: string
-    user: ArticleAuthor
+    author: ArticleAuthor
 }
 
 export interface User {
