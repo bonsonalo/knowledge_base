@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import File, Form, HTTPException, APIRouter, UploadFile, status
 
-from app.schema.article_schema import Category
+from app.schema.article_schema import ArticleResponse, Category
 from app.api.deps import editor_dependency, db_dependency
 from app.service.article_service import create_article_draft_service, create_article_publish_service, delete_article_service, delete_article_service_admin, get_all_articles_self_all_service, get_all_articles_self_draft_service, get_all_articles_self_published_service, get_all_articles_service, get_article_editor_service, get_article_service, patch_article_service
 from app.core.logger import logger
@@ -109,7 +109,7 @@ async def get_all_articles(db: db_dependency,
 
 
 #get single article     # no need to log in
-@router.get("/single_article/{article_id}")
+@router.get("/single_article/{article_id}", response_model=ArticleResponse)
 async def get_article(article_id: UUID, db: db_dependency):
     try:
         result= await get_article_service(article_id, db)

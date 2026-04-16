@@ -1,6 +1,7 @@
 from typing import Optional
 
-from app.schema.article_schema import Category
+from app.schema.article_schema import ArticleResponse, Category
+from app.schema.user_schema import PublicAuthor
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.model.article import Article
 from app.core.logger import logger
@@ -207,8 +208,21 @@ async def get_all_articles_service(db: AsyncSession,
 async def get_article_service(article_id: UUID, db: AsyncSession):
     try:
         article= await db.scalar(select(Article).where((Article.id == article_id)).where(Article.status == "published"))
-        return article
-    
+        if not article:
+            raise ValueError("Article not found")
+        return ArticleResponse(
+            id= article.id,
+            title= article.title,
+            content= article.content,
+            category= article.category,
+            cover_image= article.cover_image,
+            created_at= article.created_at,
+            author= PublicAuthor(
+                first_name= article.user.first_name,
+                last_name= article.user.last_name,
+                avatar= article.user.avatar
+            )
+        )
     except ValueError as e:
         logger.error(str(e))
         raise ValueError(str(e))

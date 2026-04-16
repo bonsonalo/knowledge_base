@@ -8,6 +8,12 @@ class UserProfile(BaseModel):
     email: str
     avatar: str | None
 
+
+class PublicAuthor(BaseModel):
+    first_name: str
+    last_name: str
+    avatar: str | None
+
 # class ProfileUpdate(BaseModel):
 #     first_name: str | None
 #     last_name: str | None
