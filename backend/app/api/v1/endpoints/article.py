@@ -91,7 +91,7 @@ async def get_all_articles_self_draft(current_user: editor_dependency, db: db_de
 
 # get all articles     # no need to login
 
-@router.get("/all_articles")
+@router.get("/all_articles", response_model=list[ArticleResponse])
 async def get_all_articles(db: db_dependency, 
                            title: str | None= None,
                            category: Category | None= None,
