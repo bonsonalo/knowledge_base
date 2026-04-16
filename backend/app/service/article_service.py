@@ -196,7 +196,22 @@ async def get_all_articles_service(db: AsyncSession,
             column.desc() if order.lower() == "desc" else column.asc()
         )
         articles= await db.execute(query)
-        return articles.scalars().all()
+        return [
+            ArticleResponse(
+                id= article.id,
+                title= article.title,
+                content= article.content,
+                category= article.category,
+                cover_image= article.cover_image,
+                created_at= article.created_at,
+                author= PublicAuthor(
+                    first_name= article.user.first_name,
+                    last_name= article.user.last_name,
+                    avatar= article.user.avatar
+                )
+            )
+            for article in articles.scalars().all()
+        ]
     except ValueError as e:
         logger.error(str(e))
         raise ValueError(str(e))
