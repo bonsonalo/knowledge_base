@@ -1,6 +1,6 @@
 import type { Article } from "../types";
 import { Link } from "react-router";
-import { UserRound } from 'lucide-react'
+import { CircleUserRound } from 'lucide-react'
 
 
 interface ArticleCardProps {
@@ -12,7 +12,7 @@ interface ArticleCardProps {
 export function ArticleCard({article}: ArticleCardProps) {
 
     return (
-        <Link to={`articles/${article.id}`} className="shadow-lg rounded-xl border-0 flex flex-col h-full" style={{borderColor: "#DEDFE3"}}>
+        <Link to={`/${article.id}`} className="shadow-lg rounded-xl border-0 flex flex-col h-full" style={{borderColor: "#DEDFE3"}}>
             <div className="relative">
                 <img src= {article.cover_image ?? undefined} className="h-35 object-cover w-full rounded-t-md"/>
                 <div className="absolute bottom-26 left-2 text-base text-white p-px px-1 rounded-xl" style={{backgroundColor: "#0a84ff"}}>
@@ -30,11 +30,11 @@ export function ArticleCard({article}: ArticleCardProps) {
             <div style={{border: "0.2px solid #cfcfcf"}}></div>
             <div className="flex justify-between px-6 lg:justify-start lg:gap-16 py-2">
                 <div style={{alignContent: "center"}}>
-                    {article.user.avatar? <img src={article.user.avatar} /> : <UserRound  size={36} className="bg-gray-300 rounded-lg p-1" style={{borderRadius: "50%"}}/>}
+                    {article.author.avatar? <img src={article.author.avatar} /> : <CircleUserRound  size={36} />}
                 </div>
                 <div style={{textAlign: "start"}}>
                     <div className="font-semibold text-sm">
-                        {article.user.first_name} {article.user.last_name}
+                        {article.author.first_name} {article.author.last_name}
                     </div>
                     <div className="text-sm text-gray-600 text-xsm">
                         {new Date (article.created_at).toLocaleDateString("en-US", {
