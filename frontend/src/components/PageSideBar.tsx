@@ -1,4 +1,4 @@
-import { CirclePlus, FileText, Bell, Users, LogOut } from "lucide-react";
+import { CirclePlus, FileText, Bell, LogOut } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../state/hook";
 
