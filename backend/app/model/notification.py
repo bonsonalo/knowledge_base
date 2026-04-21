@@ -27,7 +27,7 @@ class Notification(Base):
     )
     created_at: Mapped[datetime]= mapped_column(
         DateTime(timezone= True),
-        default= datetime.now(timezone.utc)
+        default= lambda: datetime.now(timezone.utc)
     )
 
 
