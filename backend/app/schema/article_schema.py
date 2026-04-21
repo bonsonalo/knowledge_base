@@ -31,6 +31,7 @@ class ArticleResponse(BaseModel):
     content: str
     category: Category
     cover_image: str | None
+    status: str
     created_at: datetime
     author: PublicAuthor
 
