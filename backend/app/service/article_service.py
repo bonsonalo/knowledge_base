@@ -133,11 +133,27 @@ async def get_all_articles_self_all_service(current_user, db: AsyncSession):
     current_id= current_user["id"]
     try:
         articles= await db.execute(select(Article).where(Article.author_id == current_id))
-        return articles.scalars().all()
+        return [
+            ArticleResponse(
+                id= article.id,
+                title= article.title,
+                content= article.content,
+                category= article.category,
+                cover_image= article.cover_image,
+                status= article.status,
+                created_at= article.created_at,
+                author= PublicAuthor(
+                    first_name= article.user.first_name,
+                    last_name= article.user.last_name,
+                    avatar= article.user.avatar
+                )
+            )
+            for article in articles.scalars().all()
+        ]
     except ValueError as e:
         logger.error(str(e))
         raise ValueError(str(e))
-    
+
 
 # continues from the above. it is for Published
 
@@ -203,6 +219,7 @@ async def get_all_articles_service(db: AsyncSession,
                 content= article.content,
                 category= article.category,
                 cover_image= article.cover_image,
+                status= article.status,
                 created_at= article.created_at,
                 author= PublicAuthor(
                     first_name= article.user.first_name,
@@ -231,6 +248,7 @@ async def get_article_service(article_id: UUID, db: AsyncSession):
             content= article.content,
             category= article.category,
             cover_image= article.cover_image,
+            status= article.status,
             created_at= article.created_at,
             author= PublicAuthor(
                 first_name= article.user.first_name,
@@ -253,11 +271,45 @@ async def get_article_editor_service(article_id: UUID, current_user, db: AsyncSe
     current_id= current_user["id"]
     try:
         article= await db.scalar(select(Article).where(Article.author_id == current_id).where((Article.id == article_id)))
-        return article
+        if not article:
+            raise ValueError("Article not found")
+        return ArticleResponse(
+            id= article.id,
+            title= article.title,
+            content= article.content,
+            category= article.category,
+            cover_image= article.cover_image,
+            status= article.status,
+            created_at= article.created_at,
+            author= PublicAuthor(
+                first_name= article.user.first_name,
+                last_name= article.user.last_name,
+                avatar= article.user.avatar
+            )
+        )
     except ValueError as e:
         logger.error(str(e))
         raise ValueError(str(e))
     
+
+# change article status (publish / unpublish)   Editor Role
+
+async def change_article_status_service(article_id: UUID, new_status: str, current_user, db: AsyncSession):
+    current_id= current_user["id"]
+    try:
+        article= await db.scalar(select(Article).where(Article.author_id == current_id).where(Article.id == article_id))
+        if not article:
+            raise ValueError("Article not found")
+        if new_status not in ("published", "draft"):
+            raise ValueError("Invalid status — must be 'published' or 'draft'")
+        article.status= new_status
+        await db.commit()
+        await db.refresh(article)
+        return {"message": f"Article status changed to {new_status}"}
+    except ValueError as e:
+        logger.error(str(e))
+        raise ValueError(str(e))
+
 
 # delete article Editor Role
 
