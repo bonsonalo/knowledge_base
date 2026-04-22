@@ -31,10 +31,11 @@ async def update_profile_service(current_user, db: AsyncSession, first_name: str
     if last_name is not None:
          user.last_name = last_name
     if avatar is not None:
-         user.avatar = avatar
+        from app.service.upload_service import upload_file
+        user.avatar = await upload_file(avatar, folder="avatars")
 
-    db.commit()
-    db.refresh(user)
+    await db.commit()
+    await db.refresh(user)
     return user
 
 # upload profile picture
