@@ -26,7 +26,7 @@ async def get_profile(current_user: editor_dependency, db: db_dependency):
 #update profile
 
 @router.patch("/update")
-async def update_profile(current_user, db: db_dependency, first_name: str | None= Form(None), last_name: str | None= Form(None), avatar: UploadFile | None= Form(None)):
+async def update_profile(current_user: editor_dependency, db: db_dependency, first_name: str | None= Form(None), last_name: str | None= Form(None), avatar: UploadFile | None= Form(None)):
     try:
         return await user_service.update_profile_service(current_user, db, first_name, last_name, avatar)
     except ValueError as e:
