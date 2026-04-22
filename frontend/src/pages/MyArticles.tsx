@@ -1,11 +1,12 @@
-import { Eye, FileText, MoreVertical, SquareArrowOutUpRight, ThumbsUp } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Eye, FileText, SquareArrowOutUpRight, ThumbsUp, Trash2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../utils/api";
 import { useEffect, useState } from "react";
 import type { Article } from "../types";
 
 
 export function MyArticles() {
+    const navigate = useNavigate();
     const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -175,9 +176,26 @@ export function MyArticles() {
                                 </div>
 
                                 {/* Actions */}
-                                <div>
-                                    <button className="p-1 hover:bg-gray-100 rounded">
-                                        <MoreVertical size={16} className="text-gray-500" />
+                                <div className="flex items-center gap-1">
+                                    <button
+                                        onClick={() => navigate(`/dashboard/edit/${article.id}`)}
+                                        className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 text-sm cursor-pointer"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={async () => {
+                                            if (!confirm("Are you sure you want to delete this article?")) return;
+                                            try {
+                                                await api.delete(`/api/v1/article/delete_article_editor/${article.id}`);
+                                                setArticles(prev => prev.filter(a => a.id !== article.id));
+                                            } catch {
+                                                // silently fail
+                                            }
+                                        }}
+                                        className="p-2 hover:bg-red-50 rounded-lg text-red-400 cursor-pointer"
+                                    >
+                                        <Trash2 size={15} />
                                     </button>
                                 </div>
                             </div>
