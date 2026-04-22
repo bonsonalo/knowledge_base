@@ -1,190 +1,213 @@
-import { Loader, MoveRight, SlidersHorizontal } from 'lucide-react';
+import { Loader, MoveRight, SlidersHorizontal, X } from 'lucide-react';
 import { ArticleCard } from '../components/ArticleCard';
 import { useEffect, useState } from 'react';
 import api from '../utils/api';
 import type { Article } from '../types';
 import { SideBar } from '../components/SideBar';
-import { X } from 'lucide-react';
-import { Footer } from '../components/Footer';
-import heroImage from './../../assets/knowlegde_final.jpg'
-import { Link } from 'react-router';
+import heroImage from './../../assets/knowlegde_final.jpg';
+import { Link } from 'react-router-dom';
 
 export function ArticlePage() {
-
-    const [articles, setArticles]= useState<Article[]>([])
-    const [search, setSearch]= useState("");
-    const [category, setCategory]= useState("");
-    const [sortBy, setSortBy]= useState("created_at");
-    const [order, setOrder]= useState("asc");
-    const [error, setError]= useState("");
-    const [loading, setLoading]= useState(false);
+    const [articles, setArticles] = useState<Article[]>([]);
+    const [search, setSearch] = useState("");
+    const [category, setCategory] = useState("");
+    const [sortBy, setSortBy] = useState("created_at");
+    const [order, setOrder] = useState("desc");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [debouncedSearch, setDebouncedSearch] = useState("");
-    
-    useEffect(() => {
 
-            const fetchedArticle= async () => {
-                setLoading(true);
-                try{
-                    const response= await api.get("/api/v1/article/all_articles", {
-                        params: { 
-                            ...(debouncedSearch && {title: debouncedSearch, author_name: debouncedSearch }),
-                            ...(category && {category}),
-                            sort_by: sortBy, 
-                            order
-                        }
-                    });
-                    setArticles(response.data);
-                    setLoading(false);
-                }
-                catch (_error) {
-                    setLoading(false)
-                    setError("Failed to fetch articles");
-                }
+    useEffect(() => {
+        const fetchArticles = async () => {
+            setLoading(true);
+            try {
+                const response = await api.get("/api/v1/article/all_articles", {
+                    params: {
+                        ...(debouncedSearch && { title: debouncedSearch, author_name: debouncedSearch }),
+                        ...(category && { category }),
+                        sort_by: sortBy,
+                        order,
+                    },
+                });
+                setArticles(response.data);
+            } catch {
+                setError("Failed to fetch articles");
+            } finally {
+                setLoading(false);
             }
-            fetchedArticle();
-
-
-    }, [debouncedSearch, category, sortBy, order])
+        };
+        fetchArticles();
+    }, [debouncedSearch, category, sortBy, order]);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedSearch(search)
-        }, 500)
-
-        return () => clearTimeout(timer)
-    }, [search])
-
-
+        const timer = setTimeout(() => setDebouncedSearch(search), 500);
+        return () => clearTimeout(timer);
+    }, [search]);
 
     return (
-        <div style={{backgroundColor: "#FFFFFF"}} className='flex relative flex-col min-h-screen mx-auto overflow-x-hidden'>
-            {/* <NavBar /> */}
-            <div style={{backgroundColor: "#F0F7FF", position: "relative"}} className='py-20 w-screen'>
-                <div className='flex lg:grid lg:grid-cols-2 lg:gap-30 mx-auto w-11/12 lg:w-10/12'>
-                    <div className='flex flex-col justify-start'>
-                        <div className='px-2 w-fit rounded-3xl border text-center block mx-auto text-sm lg:mx-0 lg:text-start font-bold' 
-                            style={{color: "#3899FA", backgroundColor: "#E7F2FF", borderColor: "#C4E1FE"}}>
+        <div className="flex flex-col min-h-screen bg-white overflow-x-hidden">
+
+            {/* Hero */}
+            <section className="bg-[#F0F7FF] py-20">
+                <div className="mx-auto w-11/12 lg:w-10/12 flex flex-col lg:grid lg:grid-cols-2 lg:gap-16 items-center">
+                    {/* Text */}
+                    <div>
+                        <span className="inline-block text-xs font-semibold text-[#3899FA] bg-[#E7F2FF] border border-[#C4E1FE] px-3 py-1 rounded-full mb-4">
                             Knowledge Base Platform
-                        </div>
-                        <div className=' py-4 font-bold text-4xl text-center lg:text-start'>
-                            Unlock the Collective <span style={{color: "#3899FA"}}>Intelligence</span> of Your Team
-                        </div>
-                        <div className='text-lg text-center lg:text-start mb-8' style={{color: "#4f545e", fontWeight: "400"}}>
+                        </span>
+                        <h1 className="text-4xl font-bold mb-4 text-center lg:text-left leading-tight">
+                            Unlock the Collective{" "}
+                            <span className="text-[#3899FA]">Intelligence</span>{" "}
+                            of Your Team
+                        </h1>
+                        <p className="text-gray-500 text-base mb-8 text-center lg:text-left">
                             Explore deep-dives, engineering post-mortems, and design patterns from the industry's leading contributors.
+                        </p>
+
+                        {/* Search */}
+                        <div className="flex gap-2 mb-10">
+                            <input
+                                type="text"
+                                placeholder="Search articles..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="flex-1 px-4 h-10 rounded-lg border border-gray-200 focus:outline-none focus:border-[#3899FA] text-sm bg-white transition-colors"
+                            />
                         </div>
-                        <div className='grid grid-cols-[1fr_3fr] md:grid-cols-[2fr_1fr] gap-3 mb-9'>
-                            <div>
-                                <input 
-                                    type="text" 
-                                    placeholder="Search articles..." 
-                                    value={search} 
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    className='px-2 w-52 h-10 md:w-full focus:outline-none'
-                                    style={{ borderRadius: "10px", backgroundColor: "#fff"}}
-                                    />
-                            </div>
-                            <div style={{color: "#fff"}} className='p-1 text-base lg:px-1 rounded-xl items-center justify-center flex cursor-pointer bg-[#3899FA] hover:brightness-110 hover:scale-105 transition ease-in-out duration-300">
-                            '>
-                                Browse
-                            </div>
-                        </div>
-                        <div className='flex justify-between w-full md:w-7/12'>
-                            <div>
-                                <div className='text-3xl font-bold'>2.4k+</div>
-                                <div className='text-sm opacity-70'  style={{color: "#5A5F68"}}>ARTICLES</div>
-                            </div>
-                            <div  style={{borderRight: ".4px solid #5A5F68"}}></div>
-                            <div>
-                                <div className='text-3xl font-bold'>120</div>
-                                <div className='text-sm opacity-70' style={{color: "#5A5F68"}}>AUTHORS</div>
-                            </div>
-                            <div  style={{borderRight: ".4px solid #5A5F68"}}></div>
-                            <div>
-                                <div className='text-3xl font-bold flex justify-center'>16</div>
-                                <div className='text-sm opacity-70'  style={{color: "#5A5F68"}}>CATEGORIES</div>
-                            </div>
+
+                        {/* Stats */}
+                        <div className="flex gap-8 justify-center lg:justify-start">
+                            {[
+                                { value: "2.4k+", label: "Articles" },
+                                { value: "120", label: "Authors" },
+                                { value: "16", label: "Categories" },
+                            ].map((stat, i, arr) => (
+                                <div key={stat.label} className="flex items-center gap-8">
+                                    <div className="flex flex-col items-center lg:items-start">
+                                        <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
+                                        <div className="text-xs text-gray-400 uppercase tracking-wide">{stat.label}</div>
+                                    </div>
+                                    {i < arr.length - 1 && (
+                                        <div className="h-8 border-r border-gray-300" />
+                                    )}
+                                </div>
+                            ))}
                         </div>
                     </div>
-                    <div className='relative hidden lg:block'>
-                        <div className=''>
-                            <img src={heroImage} alt="Knowledge base image" className='rounded-3xl w-full h-full object-cover'/>
-                        </div>
-                        <div className='absolute bottom-20 lg:bottom-8 left-10' style={{color: "#fff"}}>
-                            <div className='opacity-70 font-semibold' style={{fontSize: "15px"}}>
-                                Featured Today
-                            </div>
-                            <div className='text-2xl font-bold'>
-                                Scaling Distributed Systems at Velocity
-                            </div>
+
+                    {/* Hero image */}
+                    <div className="hidden lg:block relative">
+                        <img
+                            src={heroImage}
+                            alt="Knowledge base"
+                            className="rounded-3xl w-full h-full object-cover"
+                        />
+                        <div className="absolute bottom-8 left-6 text-white">
+                            <div className="text-xs opacity-70 font-semibold mb-1">Featured Today</div>
+                            <div className="text-xl font-bold">Scaling Distributed Systems at Velocity</div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div className='flex justify-end gap-4 mr-4 mt-6 items-center md:w-11/12 lg:w-10/12 md:mx-auto'>
-                <div className='flex text-xl items-center'>
-                    <div className='flex gap-4'> 
-                        <div className='text-lg flex item-center hidden lg:block'>Sort by: </div>
-                        <select onChange={(e) => setSortBy(e.target.value)}>
-                            <option className='text-sms' value="created_at">date</option>
-                            <option className='text-sm' value="title">title</option>
+            </section>
+
+            {/* Toolbar */}
+            <div className="mx-auto w-11/12 lg:w-10/12 flex items-center justify-between mt-6 mb-4">
+                <span className="text-sm text-gray-400">
+                    {!loading && `${articles.length} article${articles.length !== 1 ? "s" : ""}`}
+                </span>
+                <div className="flex items-center gap-2">
+                    {/* Mobile filter toggle */}
+                    <button
+                        onClick={() => setIsFilterOpen(v => !v)}
+                        className="md:hidden flex items-center gap-1.5 text-sm border border-gray-200 px-3 py-1.5 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                        {isFilterOpen ? <X size={14} /> : <SlidersHorizontal size={14} />}
+                        {isFilterOpen ? "Close" : "Filters"}
+                    </button>
+
+                    {/* Sort */}
+                    <div className="flex items-center gap-1 border border-gray-200 rounded-lg px-3 py-1.5 bg-white">
+                        <span className="text-xs text-gray-400 hidden sm:block">Sort:</span>
+                        <select
+                            className="text-sm text-gray-600 focus:outline-none bg-transparent cursor-pointer"
+                            onChange={(e) => setSortBy(e.target.value)}
+                            value={sortBy}
+                        >
+                            <option value="created_at">Date</option>
+                            <option value="title">Title</option>
+                        </select>
+                        <select
+                            className="text-sm text-gray-600 focus:outline-none bg-transparent cursor-pointer"
+                            onChange={(e) => setOrder(e.target.value)}
+                            value={order}
+                        >
+                            <option value="desc">Newest</option>
+                            <option value="asc">Oldest</option>
                         </select>
                     </div>
-                    <select onChange={(e) => setOrder(e.target.value)}>
-                        <option className='text-sm' value="asc">asc</option>
-                        <option className='text-sm' value="desc">desc</option>
-                    </select>
-                </div>
-                <div className='flex items-center md:hidden lg:hidden'>
-                    {isFilterOpen? < X onClick={() => setIsFilterOpen(false)}/> : <button className='' onClick={() => setIsFilterOpen(true)}><SlidersHorizontal /></button>}
                 </div>
             </div>
-            <div className='md:grid md:grid-cols-[30%_70%] mt-12 mx-auto md:gap-1  lg:grid-cols-[20%_80%] lg:gap-4 w-11/12 lg:w-10/12'>
-                <div className={`
-                    md:block
-                    transition-all    
-                    duration-300
-                    ease-in-out 
-                    shadow-xl
-                    rounded-xl
-                    h-fit
-                    mb-9
-                    w-11/12
-                    mx-auto
-                    will-change-transform
-                    lg:min-h-[600px]
-                    ${isFilterOpen ? "max-h-[500px] opacity-100 py-5 md:max-h-none md:w-full md:p-3 md:py-5 md: md:opacity-100 p-0 m-0" : "max-h-0 opacity-0 md:max-h-none md:w-full md:p-3 md:py-5  md:opacity-100 p-0 m-0"}
-                `}
-                style={{border: "1px solid #c5c5c5"}}
-                >
-                    <SideBar category={category} setCategory={setCategory} onClose={() => setIsFilterOpen(false)}/>
+
+            {/* Content */}
+            <div className="mx-auto w-11/12 lg:w-10/12 md:grid md:grid-cols-[220px_1fr] gap-6 mb-12">
+                {/* Sidebar */}
+                <div className={`${isFilterOpen ? "block" : "hidden"} md:block`}>
+                    <div className="border border-gray-100 rounded-xl shadow-sm mb-6 md:mb-0 md:sticky md:top-20">
+                        <SideBar
+                            category={category}
+                            setCategory={setCategory}
+                            onClose={() => setIsFilterOpen(false)}
+                        />
+                    </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-fit gap-7 md:gap-5 lg:gap-8 mx-auto w-11/12 mb-12">
-                    {loading && <Loader /> }
-                    { error ? <div>{error}</div> : articles.map((article) => (
-                        <ArticleCard key={article.id} article={article} />
-                    ))}
+
+                {/* Article grid */}
+                <div>
+                    {loading && (
+                        <div className="flex justify-center py-16">
+                            <Loader className="animate-spin text-gray-400" size={28} />
+                        </div>
+                    )}
+                    {error && (
+                        <div className="text-red-500 text-sm py-12 text-center">{error}</div>
+                    )}
+                    {!loading && !error && articles.length === 0 && (
+                        <div className="text-gray-400 text-sm py-12 text-center">No articles found.</div>
+                    )}
+                    {!loading && !error && articles.length > 0 && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {articles.map((article) => (
+                                <ArticleCard key={article.id} article={article} />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
-            <div className='bg-[#D7EBFE] py-6 md:py-8 mx-auto w-11/12 text-xs rounded-md px-3 md:px-6 md:w-5/12 md:justify-end md:ml-auto md:mr-45'>
-                <div className='bg-[#3899FA] w-fit py-1 px-2 rounded-xl font-semibold mb-3 '>Spotlight Series</div>
-                <div className='md:flex md:gap-5 md:justify-between'>
+
+            {/* Spotlight banner */}
+            <div className="mx-auto w-11/12 lg:w-10/12 mb-12">
+                <div className="bg-[#D7EBFE] rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
-                        <div className='text-base font-bold mb-3'>
+                        <span className="inline-block text-xs font-semibold text-white bg-[#3899FA] px-2 py-1 rounded-lg mb-2">
+                            Spotlight Series
+                        </span>
+                        <div className="font-bold text-base mb-1 text-gray-900">
                             The Engineering Management Handbook
                         </div>
-                        <div className='opacity-70'>
+                        <div className="text-sm text-gray-600 max-w-sm">
                             A curated collection of over 20 articles covering everything from hiring strategies to conflict resolution and performance reviews.
                         </div>
                     </div>
-                    <Link to={"#"} className='flex justify-center py-5'>
-                        < MoveRight color='black' size={42} className=' p-3 bg-[#3899FA] mx-auto rounded-full' />
+                    <Link
+                        to="#"
+                        className="shrink-0 bg-[#3899FA] p-3 rounded-full hover:brightness-110 transition-all"
+                    >
+                        <MoveRight color="white" size={20} />
                     </Link>
                 </div>
             </div>
-            <div className='mt-auto overflow-x-hidden'>
-                {/* < Footer /> */}
-            </div>
+
         </div>
-    )
+    );
 }
