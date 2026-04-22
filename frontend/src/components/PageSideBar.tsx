@@ -1,4 +1,4 @@
-import { CirclePlus, FileText, Bell, LogOut } from "lucide-react";
+import { CirclePlus, FileText, Bell, LogOut, UserRound } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../state/hook";
 
@@ -37,11 +37,15 @@ export function PageSideBar({ isOpen }: PageSideBarProps) {
                     <Bell size={18} />
                     <span>Notifications</span>
                 </NavLink>
+                <NavLink to="/profile" className={navLinkClass}>
+                    <UserRound size={18} />
+                    <span>My Profile</span>
+                </NavLink>
             </div>
 
             <button
                 onClick={handleLogout}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-red-500 hover:bg-white transition-colors w-full"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-red-500 hover:bg-white transition-colors w-full cursor-pointer"
             >
                 <LogOut size={18} />
                 <span>Logout</span>
