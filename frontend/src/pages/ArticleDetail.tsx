@@ -36,7 +36,7 @@ export function ArticleDetail() {
                 const response= await api.get(`/api/v1/article/single_article/${article_id}`);
                 setArticle(response.data);
             }
-            catch(_error) {
+            catch {
                 setError("failed to fetche the article")
             }
         }
