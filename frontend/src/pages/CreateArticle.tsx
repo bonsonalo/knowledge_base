@@ -209,13 +209,6 @@ export function CreateArticle() {
                         />
                     </label>
 
-                    {/* --- TITLE INPUT (Step 8) ---
-                        A plain <input> with all default browser styling removed.
-                        text-3xl + font-bold makes it look like a heading, not a form field.
-                        placeholder-gray-300 makes the placeholder text light grey.
-                        value + onChange makes it a "controlled input" — meaning React
-                        owns the value through the title state, not the browser DOM.
-                        Every keystroke calls setTitle which updates state and re-renders. */}
                     <input
                         type="text"
                         placeholder="Article title..."
