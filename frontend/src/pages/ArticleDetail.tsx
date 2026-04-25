@@ -70,12 +70,12 @@ export function ArticleDetail() {
             <div className="text-3xl font-bold mb-4 lg:text-4xl">
                 {article?.title}
             </div>
-            <div className="line-clamp-3 text-sm mb-3 lg:text-base">
+            <div className="line-clamp-2 text-sm mb-3 lg:text-base">
                 {article?.content}
             </div>
             <div className="flex justify-start gap-5 lg:gap-10 border-t-2 border-b-2 py-3 border-gray-200 mb-6 items-center">
-                <div>
-                    {article?.author?.avatar ? <img src={article?.author?.avatar}/> : <Link to={"#"}><CircleUserRound size={30}/></Link>}
+                <div className="flex gap-4">
+                    {article?.author?.avatar ? <img src={article?.author?.avatar} className="rounded-full w-12 h-12"/> : <Link to={"#"}><CircleUserRound size={30}/></Link>}
                 </div>
                 <div>
                     <div className="font-bold lg:text-xl">
@@ -103,7 +103,7 @@ export function ArticleDetail() {
             <div className="mt-8 text-sm lg:text-base">
                 {article?.content}
             </div>
-            <div className="flex flex-col items-center bg-[#F9FAFA] mt-4 rounded-xl py-6 px-2 lg:mt-10 lg:p-9 ">
+            <div className="flex flex-col items-center bg-[#F9FAFA] mt-4 rounded-xl py-6 px-2 lg:mt-10 lg:p-9 mb-14">
                 <div className="mb-4">< ThumbsUp size= {30} color="#3899FA"/></div>
                 <div className="font-bold mb-2 lg:text-2xl">Was this article helpful?</div>
                 <div className="text-center text-xs lg:text-sm">Your feedback helps us improve the quality of our knowledge base.</div>
