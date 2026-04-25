@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.model.article import Article
 from app.core.logger import logger
 from sqlalchemy import or_, select
+from sqlalchemy.orm import joinedload
 from uuid import UUID
 from fastapi import File, Form, UploadFile
 from app.service.upload_service import upload_file
@@ -132,7 +133,7 @@ async def patch_article_service(article_id: UUID, current_user, db: AsyncSession
 async def get_all_articles_self_all_service(current_user, db: AsyncSession):
     current_id= current_user["id"]
     try:
-        articles= await db.execute(select(Article).where(Article.author_id == current_id))
+        articles= await db.execute(select(Article).options(joinedload(Article.user)).where(Article.author_id == current_id))
         return [
             ArticleResponse(
                 id= article.id,
@@ -192,7 +193,7 @@ async def get_all_articles_service(db: AsyncSession,
     allowed_sort= {"title", "created_at"}
     allowed_orders= {"asc", "desc"}
     try:
-        query= select(Article).where(Article.status == "published")
+        query= select(Article).options(joinedload(Article.user)).where(Article.status == "published")
         if title is not None or author_name is not None:
             query= query.join(Article.user).where(
                 or_(
@@ -239,7 +240,7 @@ async def get_all_articles_service(db: AsyncSession,
 
 async def get_article_service(article_id: UUID, db: AsyncSession):
     try:
-        article= await db.scalar(select(Article).where((Article.id == article_id)).where(Article.status == "published"))
+        article= await db.scalar(select(Article).options(joinedload(Article.user)).where((Article.id == article_id)).where(Article.status == "published"))
         if not article:
             raise ValueError("Article not found")
         return ArticleResponse(
@@ -270,7 +271,7 @@ async def get_article_service(article_id: UUID, db: AsyncSession):
 async def get_article_editor_service(article_id: UUID, current_user, db: AsyncSession):
     current_id= current_user["id"]
     try:
-        article= await db.scalar(select(Article).where(Article.author_id == current_id).where((Article.id == article_id)))
+        article= await db.scalar(select(Article).options(joinedload(Article.user)).where(Article.author_id == current_id).where((Article.id == article_id)))
         if not article:
             raise ValueError("Article not found")
         return ArticleResponse(
