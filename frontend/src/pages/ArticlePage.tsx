@@ -1,51 +1,19 @@
 import { Loader, MoveRight, SlidersHorizontal, X } from 'lucide-react';
 import { ArticleCard } from '../components/ArticleCard';
-import { useEffect, useState } from 'react';
-import api from '../utils/api';
-import type { Article } from '../types';
+import { useState } from 'react';
 import { SideBar } from '../components/SideBar';
 import heroImage from './../../assets/knowlegde_final.jpg';
 import { Link } from 'react-router-dom';
+import { useArticleFilters } from '../hooks/useArticleFilter';
+import { useArticle } from '../hooks/useArticle';
 
 export function ArticlePage() {
-    const [articles, setArticles] = useState<Article[]>([]);
-    const [search, setSearch] = useState("");
-    const [category, setCategory] = useState("");
-    const [sortBy, setSortBy] = useState("created_at");
-    const [order, setOrder] = useState("desc");
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
+    
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const { filters, updateFilters}= useArticleFilters();
+    const { articles, loading, error }= useArticle(filters);
 
-    useEffect(() => {
-        const fetchArticles = async () => {
-            setLoading(true);
-            try {
-                const response = await api.get("/api/v1/article/all_articles", {
-                    params: {
-                        ...(debouncedSearch && { title: debouncedSearch, author_name: debouncedSearch }),
-                        ...(category && { category }),
-                        sort_by: sortBy,
-                        order,
-                    },
-                });
-                setArticles(response.data);
-            } catch {
-                setError("Failed to fetch articles");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchArticles();
-    }, [debouncedSearch, category, sortBy, order]);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setDebouncedSearch(search), 500);
-        return () => clearTimeout(timer);
-    }, [search]);
-
-    return (
+        return (
         <div className="flex flex-col min-h-screen bg-white overflow-x-hidden">
 
             {/* Hero */}
@@ -70,8 +38,8 @@ export function ArticlePage() {
                             <input
                                 type="text"
                                 placeholder="Search articles..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
+                                value={filters.search}
+                                onChange={(e) => updateFilters("search", e.target.value)}
                                 className="flex-1 px-4 h-10 rounded-lg border border-gray-200 focus:outline-none focus:border-[#3899FA] text-sm bg-white transition-colors"
                             />
                         </div>
@@ -131,16 +99,16 @@ export function ArticlePage() {
                         <span className="text-xs text-gray-400 hidden sm:block">Sort:</span>
                         <select
                             className="text-sm text-gray-600 focus:outline-none bg-transparent cursor-pointer"
-                            onChange={(e) => setSortBy(e.target.value)}
-                            value={sortBy}
+                            onChange={(e) => updateFilters("sortBy", e.target.value)}
+                            value={filters.sortBy}
                         >
                             <option value="created_at">Date</option>
                             <option value="title">Title</option>
                         </select>
                         <select
                             className="text-sm text-gray-600 focus:outline-none bg-transparent cursor-pointer"
-                            onChange={(e) => setOrder(e.target.value)}
-                            value={order}
+                            onChange={(e) => updateFilters("order", e.target.value)}
+                            value={filters.order}
                         >
                             <option value="desc">Newest</option>
                             <option value="asc">Oldest</option>
@@ -155,8 +123,8 @@ export function ArticlePage() {
                 <div className={`${isFilterOpen ? "block" : "hidden"} md:block`}>
                     <div className="border border-gray-100 rounded-xl shadow-sm mb-6 md:mb-0 md:sticky md:top-20">
                         <SideBar
-                            category={category}
-                            setCategory={setCategory}
+                            category={filters.category}
+                            setCategory={(val) => updateFilters("category", val)}
                             onClose={() => setIsFilterOpen(false)}
                         />
                     </div>
@@ -186,7 +154,7 @@ export function ArticlePage() {
             </div>
 
             {/* Spotlight banner */}
-            <div className="mx-auto w-11/12 lg:w-10/12 mb-12">
+            <div className="mx-auto w-11/12 lg:w-3/6 lg:mt-12 mb-12">
                 <div className="bg-[#D7EBFE] rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
                         <span className="inline-block text-xs font-semibold text-white bg-[#3899FA] px-2 py-1 rounded-lg mb-2">
