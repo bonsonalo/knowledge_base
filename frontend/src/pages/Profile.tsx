@@ -1,64 +1,19 @@
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import { CircleUserRound, Camera, Mail, User, Shield, Save, Loader } from "lucide-react";
-import { useAuth } from "../state/hook";
-import api from "../utils/api";
+import { useProfile } from "../hooks/useProfile";
 
 export function Profile() {
-    const { currentUser, fetchUser } = useAuth();
-
-    const [firstName, setFirstName] = useState(currentUser?.first_name ?? "");
-    const [lastName, setLastName] = useState(currentUser?.last_name ?? "");
-    const [avatarPreview, setAvatarPreview] = useState<string | null>(currentUser?.avatar ?? null);
-    const [avatarFile, setAvatarFile] = useState<File | null>(null);
-    const [saving, setSaving] = useState(false);
-    const [success, setSuccess] = useState("");
-    const [error, setError] = useState("");
+    const {
+        currentUser,
+        firstName, setFirstName,
+        lastName, setLastName,
+        avatarPreview,
+        saving, success, error,
+        handleAvatarChange, handleSave,
+        isDirty, roleBadgeStyle,
+    } = useProfile();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
-
-    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        setAvatarFile(file);
-        setAvatarPreview(URL.createObjectURL(file));
-    };
-
-    const handleSave = async () => {
-        if (!firstName.trim() || !lastName.trim()) {
-            setError("First name and last name are required.");
-            return;
-        }
-        setSaving(true);
-        setError("");
-        setSuccess("");
-        try {
-            const form = new FormData();
-            form.append("first_name", firstName.trim());
-            form.append("last_name", lastName.trim());
-            if (avatarFile) form.append("avatar", avatarFile);
-
-            await api.patch("/api/v1/me/update", form, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-            await fetchUser();
-            setSuccess("Profile updated successfully.");
-            setAvatarFile(null);
-        } catch {
-            setError("Failed to update profile. Please try again.");
-        } finally {
-            setSaving(false);
-        }
-    };
-
-    const roleBadgeStyle =
-        currentUser?.role === "admin"
-            ? "bg-purple-100 text-purple-700"
-            : "bg-blue-100 text-[#3899FA]";
-
-    const isDirty =
-        firstName !== (currentUser?.first_name ?? "") ||
-        lastName !== (currentUser?.last_name ?? "") ||
-        avatarFile !== null;
 
     return (
         <div className="p-6 max-w-2xl">
@@ -72,7 +27,6 @@ export function Profile() {
 
             {/* Avatar card */}
             <div className="bg-[#F9FAFA] rounded-xl p-6 flex flex-col sm:flex-row items-center gap-6 mb-6">
-                {/* Avatar with overlay button */}
                 <div className="relative shrink-0">
                     <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden shrink-0">
                         {avatarPreview ? (
@@ -101,15 +55,12 @@ export function Profile() {
                     />
                 </div>
 
-                {/* Name + meta */}
                 <div className="flex flex-col gap-1 text-center sm:text-left">
                     <div className="font-bold text-xl">
                         {currentUser?.first_name} {currentUser?.last_name}
                     </div>
                     <div className="text-gray-500 text-sm">{currentUser?.email}</div>
-                    <span
-                        className={`text-xs px-2 py-1 rounded-full font-medium w-fit mx-auto sm:mx-0 capitalize ${roleBadgeStyle}`}
-                    >
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium w-fit mx-auto sm:mx-0 capitalize ${roleBadgeStyle}`}>
                         {currentUser?.role}
                     </span>
                 </div>
@@ -117,19 +68,15 @@ export function Profile() {
 
             {/* Form card */}
             <div className="border border-gray-100 rounded-xl overflow-hidden mb-6">
-                {/* Section header */}
                 <div className="bg-[#F9FAFA] px-6 py-4 border-b border-gray-100 flex items-center gap-2">
                     <User size={16} className="text-gray-400" />
                     <span className="font-medium text-sm">Personal Information</span>
                 </div>
 
                 <div className="p-6 flex flex-col gap-5">
-                    {/* First / Last name row */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1.5">
-                            <label className="text-xs font-medium text-gray-500">
-                                First Name
-                            </label>
+                            <label className="text-xs font-medium text-gray-500">First Name</label>
                             <input
                                 type="text"
                                 value={firstName}
@@ -138,9 +85,7 @@ export function Profile() {
                             />
                         </div>
                         <div className="flex flex-col gap-1.5">
-                            <label className="text-xs font-medium text-gray-500">
-                                Last Name
-                            </label>
+                            <label className="text-xs font-medium text-gray-500">Last Name</label>
                             <input
                                 type="text"
                                 value={lastName}
@@ -150,7 +95,6 @@ export function Profile() {
                         </div>
                     </div>
 
-                    {/* Email — read-only */}
                     <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-medium text-gray-500 flex items-center gap-1">
                             <Mail size={12} />
@@ -162,7 +106,6 @@ export function Profile() {
                         <span className="text-xs text-gray-400">Email cannot be changed.</span>
                     </div>
 
-                    {/* Role — read-only */}
                     <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-medium text-gray-500 flex items-center gap-1">
                             <Shield size={12} />
@@ -175,15 +118,11 @@ export function Profile() {
                 </div>
             </div>
 
-            {/* Feedback messages */}
-            {error && (
-                <div className="text-red-500 text-sm mb-4">{error}</div>
-            )}
-            {success && (
-                <div className="text-green-600 text-sm mb-4">{success}</div>
-            )}
+            {/* Feedback */}
+            {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+            {success && <div className="text-green-600 text-sm mb-4">{success}</div>}
 
-            {/* Save button */}
+            {/* Save */}
             <button
                 onClick={handleSave}
                 disabled={saving || !isDirty}
