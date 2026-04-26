@@ -1,36 +1,12 @@
 import { Eye, FileText, SquareArrowOutUpRight, ThumbsUp, Trash2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../utils/api";
-import { useEffect, useState } from "react";
-import type { Article } from "../types";
-
+import { useState } from "react";
+import { useMyArticles } from "../hooks/useMyArticles";
 
 export function MyArticles() {
     const navigate = useNavigate();
-    const [articles, setArticles] = useState<Article[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+    const { articles, loading, error, handleDelete, totalCount, publishedCount, draftCount } = useMyArticles();
     const [activeTab, setActiveTab] = useState<"all" | "published" | "draft">("all");
-
-    useEffect(() => {
-        const fetchArticles = async () => {
-            setLoading(true);
-            try {
-                const response = await api.get("/api/v1/article/self_articles");
-                setArticles(response.data);
-            } catch {
-                setError("Failed to fetch articles");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchArticles();
-    }, []);
-
-    // Derived counts — computed from the single fetched array, no extra API calls
-    const totalCount = articles.length;
-    const publishedCount = articles.filter(a => a.status === "published").length;
-    const draftCount = articles.filter(a => a.status === "draft").length;
 
     const displayed = activeTab === "all"
         ? articles
@@ -92,7 +68,7 @@ export function MyArticles() {
                 </div>
             </div>
 
-            {/* Tabs — buttons with activeTab state, not Links */}
+            {/* Tabs */}
             <div className="flex bg-[#F9FAFA] p-1 gap-1 w-fit rounded-xl mb-6">
                 <button
                     onClick={() => setActiveTab("all")}
@@ -114,14 +90,13 @@ export function MyArticles() {
                 </button>
             </div>
 
-            {/* Loading / error states */}
+            {/* Loading / error */}
             {loading && <div className="text-gray-500 text-sm">Loading...</div>}
             {error && <div className="text-red-500 text-sm">{error}</div>}
 
             {/* Article table */}
             {!loading && !error && (
                 <div className="border border-gray-100 rounded-lg overflow-x-auto">
-                    {/* Table header */}
                     <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] bg-[#F9FAFA] px-4 py-3 text-sm text-gray-500 font-medium min-w-[700px]">
                         <div>Article Title</div>
                         <div>Status</div>
@@ -131,7 +106,6 @@ export function MyArticles() {
                         <div>Actions</div>
                     </div>
 
-                    {/* Rows */}
                     {displayed.length === 0 ? (
                         <div className="px-4 py-8 text-center text-gray-400 text-sm">No articles found.</div>
                     ) : (
@@ -140,13 +114,11 @@ export function MyArticles() {
                                 key={article.id}
                                 className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] items-center px-4 py-4 border-t border-gray-100 hover:bg-gray-50 min-w-[700px]"
                             >
-                                {/* Title + truncated content */}
                                 <div className="flex flex-col gap-0.5 pr-4 min-w-0">
                                     <div className="font-medium text-sm line-clamp-1">{article.title}</div>
                                     <div className="text-xs text-gray-400 line-clamp-1">{article.content}</div>
                                 </div>
 
-                                {/* Status badge */}
                                 <div>
                                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                                         article.status === "published"
@@ -157,25 +129,21 @@ export function MyArticles() {
                                     </span>
                                 </div>
 
-                                {/* Category */}
                                 <div className="text-sm text-gray-600 capitalize">
                                     {article.category.replace("_", " ")}
                                 </div>
 
-                                {/* Engagement placeholder */}
                                 <div className="flex gap-3 text-sm text-gray-500">
                                     <span className="flex items-center gap-1"><Eye size={14} /> 0</span>
                                     <span className="flex items-center gap-1"><ThumbsUp size={14} /> 0</span>
                                 </div>
 
-                                {/* Published date */}
                                 <div className="text-sm text-gray-500">
                                     {new Date(article.created_at).toLocaleDateString("en-US", {
                                         month: "short", day: "numeric", year: "numeric"
                                     })}
                                 </div>
 
-                                {/* Actions */}
                                 <div className="flex items-center gap-1">
                                     <button
                                         onClick={() => navigate(`/dashboard/edit/${article.id}`)}
@@ -184,15 +152,7 @@ export function MyArticles() {
                                         Edit
                                     </button>
                                     <button
-                                        onClick={async () => {
-                                            if (!confirm("Are you sure you want to delete this article?")) return;
-                                            try {
-                                                await api.delete(`/api/v1/article/delete_article_editor/${article.id}`);
-                                                setArticles(prev => prev.filter(a => a.id !== article.id));
-                                            } catch {
-                                                // silently fail
-                                            }
-                                        }}
+                                        onClick={() => handleDelete(article.id)}
                                         className="p-2 hover:bg-red-50 rounded-lg text-red-400 cursor-pointer"
                                     >
                                         <Trash2 size={15} />
