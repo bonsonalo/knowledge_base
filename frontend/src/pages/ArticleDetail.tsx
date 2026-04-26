@@ -1,19 +1,18 @@
-import { useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom"
-import type { Article } from "../types";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom"
 import api from "../utils/api";
 import { ChevronLeft, CircleUserRound, ThumbsUp, Trash2 } from "lucide-react";
 import { useAuth } from "../state/hook";
+import { useArticleDetail } from "../hooks/useArticleDetail";
 
 
 
 
 export function ArticleDetail() {
 
-    const [article, setArticle]= useState<Article | null>(null);
-    const [error, setError] = useState("");
+    const {article, article_id, setError, error}= useArticleDetail();
     const [deleting, setDeleting] = useState(false);
-    const { article_id }= useParams();
+    
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
 
@@ -30,18 +29,7 @@ export function ArticleDetail() {
         }
     };
 
-    useEffect(() => {
-        const fetchArticle= async () => {
-            try{
-                const response= await api.get(`/api/v1/article/single_article/${article_id}`);
-                setArticle(response.data);
-            }
-            catch {
-                setError("failed to fetche the article")
-            }
-        }
-        fetchArticle();
-    }, [article_id])
+
 
 
     return (
@@ -64,6 +52,9 @@ export function ArticleDetail() {
                     </button>
                 )}
             </div>
+            {error && (
+                <div className="text-red-500 text-sm">{error}</div>
+            )}
             <div className="bg-[#D7EBFE] text-sm w-fit text-[#3899FA] rounded-xl mb-3 lg:p-1 lg:mb-4">
                 {article?.category}
             </div>
