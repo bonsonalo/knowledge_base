@@ -10,11 +10,13 @@ import { useArticleDetail } from "../hooks/useArticleDetail";
 
 export function ArticleDetail() {
 
-    const {article, article_id, setError, error}= useArticleDetail();
+    const {article, article_id, setError, error, loading}= useArticleDetail();
     const [deleting, setDeleting] = useState(false);
     
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
+
+    if (loading) return <div className="flex justify-center py-32 text-gray-400 text-sm">Loading...</div>;
 
     const handleDelete = async () => {
         // confirm() shows a native browser popup — returns true if user clicks OK
@@ -62,7 +64,7 @@ export function ArticleDetail() {
                 {article?.title}
             </div>
             <div className="line-clamp-2 text-sm mb-3 lg:text-base">
-                {article?.content}
+                {article?.content.replace(/<[^>]*>/g, "")}
             </div>
             <div className="flex justify-start gap-5 lg:gap-10 border-t-2 border-b-2 py-3 border-gray-200 mb-6 items-center">
                 <div className="flex gap-4">
@@ -91,9 +93,10 @@ export function ArticleDetail() {
                     Modern knowledge architecture utilizes distributed indexing for high-availability.
                 </div>
             </div>
-            <div className="mt-8 text-sm lg:text-base">
-                {article?.content}
-            </div>
+            <div
+                className="mt-8 text-sm lg:text-base prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{ __html: article?.content ?? "" }}
+            />
             <div className="flex flex-col items-center bg-[#F9FAFA] mt-4 rounded-xl py-6 px-2 lg:mt-10 lg:p-9 mb-14">
                 <div className="mb-4">< ThumbsUp size= {30} color="#3899FA"/></div>
                 <div className="font-bold mb-2 lg:text-2xl">Was this article helpful?</div>
