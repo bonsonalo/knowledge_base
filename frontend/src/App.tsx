@@ -1,4 +1,11 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+}
 import { LoginPage } from "./pages/LoginPage";
 import { SignUpPage } from "./pages/SignUpPages";
 import { AuthInitializer } from "./components/AuthInitializer";
@@ -18,6 +25,7 @@ export default function App(){
   return (
     <>
     <AuthInitializer />
+    <ScrollToTop />
     <div className="min-h-screen flex flex-col">
       <NavBar />
       <div className="flex-1 flex flex-col">
