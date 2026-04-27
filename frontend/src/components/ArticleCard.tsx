@@ -24,7 +24,7 @@ export function ArticleCard({ article }: { article: Article }) {
                     {article.title}
                 </div>
                 <div className="text-sm text-gray-500 line-clamp-3 flex-1">
-                    {article.content}
+                    {article.content.replace(/<[^>]*>/g, "")}
                 </div>
             </div>
 
