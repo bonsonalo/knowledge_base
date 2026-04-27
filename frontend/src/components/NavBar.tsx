@@ -13,7 +13,7 @@ export function NavBar() {
     useEffect(() => {
         if (currentUser) {
             const fetchNotifications = () => {
-                api.get("/api/v1/notification")
+                api.get("/api/v1/notification/")
                     .then(response => {
                         const unreadCount = response.data.filter((n: Notification) => !n.is_read).length;
                         setNotifications(unreadCount);
