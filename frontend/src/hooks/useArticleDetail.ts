@@ -9,6 +9,7 @@ export function useArticleDetail() {
 
     const [article, setArticle]= useState<Article | null>(null);
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(true);
     const { article_id }= useParams();
 
 
@@ -20,6 +21,8 @@ export function useArticleDetail() {
         }
         catch {
             setError("failed to fetche the article")
+        } finally {
+            setLoading(false);
         }
     }
     fetchArticle();
@@ -27,6 +30,6 @@ export function useArticleDetail() {
 
 
 
-    return {article, article_id, setError, error}
+    return {article, article_id, setError, error, loading}
     
 }
