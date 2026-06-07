@@ -12,7 +12,6 @@ from jose import jwt, JWTError
 import uuid
 from typing import Annotated, List
 from fastapi import Depends, HTTPException, status, Request
-from fastapi.security import OAuth2PasswordBearer
 from app.core.database import get_db
 from uuid import UUID
 
