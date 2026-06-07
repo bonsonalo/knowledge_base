@@ -41,14 +41,6 @@ async def create_article_publish_service(file: UploadFile,
         )
 
 
-        db.add(created)
-        logger.info("added the created article successfully")
-        await db.commit()
-        logger.info("commited to db successfully")
-        await db.refresh(created)
-        logger.info("refreshed successfully")
-
-
         # add notification
         await create_notification(
             user_id= current_id,
@@ -56,6 +48,13 @@ async def create_article_publish_service(file: UploadFile,
             db= db
         )
         logger.info("created_notification")
+
+        db.add(created)
+        logger.info("added the created article successfully")
+        await db.commit()
+        logger.info("commited to db successfully")
+        await db.refresh(created)
+        logger.info("refreshed successfully")
 
         return {"message": "Article created and published successfully"}
 
